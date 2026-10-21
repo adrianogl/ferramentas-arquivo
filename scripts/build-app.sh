@@ -9,18 +9,20 @@ BUNDLE_ID="dev.aglv.FerramentasArquivo"
 
 INSTALL=false
 ADHOC=false
+ARCH_FLAGS=()
 for arg in "$@"; do
     case "$arg" in
         --install) INSTALL=true ;;
         --adhoc) ADHOC=true ;;
-        *) echo "uso: $0 [--install] [--adhoc]" >&2; exit 64 ;;
+        --universal) ARCH_FLAGS=(--arch arm64 --arch x86_64) ;;
+        *) echo "uso: $0 [--install] [--adhoc] [--universal]" >&2; exit 64 ;;
     esac
 done
 INFO_PLIST="${INFO_PLIST:-$ROOT/Resources/Info.plist}"
 
 cd "$ROOT"
-swift build -c release --product FileToolsApp
-BIN_DIR="$(swift build -c release --product FileToolsApp --show-bin-path)"
+swift build -c release --product FileToolsApp ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"}
+BIN_DIR="$(swift build -c release --product FileToolsApp ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"} --show-bin-path)"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -40,7 +42,7 @@ if [[ -z "$IDENTITY" ]]; then
     echo "aviso: assinatura ad hoc: as permissões serão pedidas de novo a cada build" >&2
 fi
 codesign --force --sign "$IDENTITY" "$APP"
-echo "app em $APP (assinado com $IDENTITY)"
+echo "app em $APP (assinado com $IDENTITY, arquiteturas: $(lipo -archs "$APP/Contents/MacOS/FileTools"))"
 
 if [[ "$INSTALL" == true ]]; then
     osascript -e "quit app id \"$BUNDLE_ID\"" || true

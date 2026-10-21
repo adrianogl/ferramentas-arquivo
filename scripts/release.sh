@@ -20,7 +20,7 @@ mkdir -p "$ROOT/build"
 cp "$ROOT/Resources/Info.plist" "$RELEASE_PLIST"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$RELEASE_PLIST"
 
-INFO_PLIST="$RELEASE_PLIST" "$ROOT/scripts/build-app.sh" --adhoc
+INFO_PLIST="$RELEASE_PLIST" "$ROOT/scripts/build-app.sh" --adhoc --universal
 
 rm -f "$ZIP" "$ZIP.sha256"
 ditto -c -k --keepParent "$ROOT/build/$APP_NAME" "$ZIP"
