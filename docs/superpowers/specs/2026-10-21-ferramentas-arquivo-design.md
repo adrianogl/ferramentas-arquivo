@@ -9,13 +9,19 @@ Para pedir reembolso, o autor precisa anexar PDFs de no máximo 1 MB. Os PDFs co
 
 ## Escopo da primeira versão
 
-Três ações, acessadas por um menu circular flutuante (⌥ + clique direito no arquivo) e, como alternativa, pelo menu de contexto do Finder:
+Sete ações, acessadas por um menu circular flutuante (⌥ + clique direito no arquivo) e, como alternativa, pelo menu de contexto do Finder:
 
 1. **Otimizar PDF**: reduz o PDF até ficar abaixo do limite configurado (padrão 1 MB).
 2. **Imagens para PDF**: uma ou várias imagens viram um PDF só, uma página por imagem, já abaixo do limite.
 3. **Juntar PDFs**: vários PDFs viram um só, abaixo do limite.
+4. **Dividir PDF**: janelinha para separar todas as páginas ou extrair um intervalo.
+5. **Organizar PDF**: janela com miniaturas para reordenar, apagar, girar e adicionar páginas.
+6. **PDF para JPG**: cada página vira um JPG.
+7. **PDF para Markdown**: o texto do PDF vira um arquivo `.md`, preservando títulos, listas e links.
 
-O app nasce para receber ações novas depois. As próximas, em ordem provável: girar páginas, PDF para imagem e OCR (Vision). Numa fase seguinte entram as que precisam de uma janela para escolher algo: dividir/extrair páginas, senha e marca d'água.
+O app nasce para receber ações novas depois. Candidatas: OCR para deixar PDF escaneado pesquisável, senha e marca d'água.
+
+*Decisão minha:* o limite de tamanho vale só para Otimizar, Imagens para PDF e Juntar, que são as ações de "preparar para enviar". Dividir, Organizar, PDF para JPG e PDF para Markdown não comprimem.
 
 ## Comportamento
 
@@ -25,10 +31,16 @@ Este é o jeito principal de usar o app, pedido pelo autor.
 
 - **Gatilho:** ⌥ Option + clique direito sobre um arquivo (ou uma seleção) no Finder, inclusive na Mesa. O menu de contexto do Finder **não** aparece nesse caso. Sem a tecla, o clique direito continua normal. A tecla pode ser trocada nas configurações *(padrão ⌥: decisão minha)*.
 - **Alvo:** se o arquivo clicado já fizer parte da seleção, vale a seleção inteira. Se não fizer, vale só o arquivo clicado, como acontece no Finder.
-- **Forma:** círculo centralizado no cursor, com uma fatia por ação e um miolo central. A primeira versão tem quatro posições: Otimizar (em cima), Juntar (à direita), Imagens para PDF (embaixo) e uma vaga tracejada para a próxima ação (à esquerda). Com mais ações, o anel se divide em até 8 fatias.
-- **Visual aprovado ("C + D"):** vidro translúcido no estilo do macOS atual (desfoque e brilho na borda), que segue o modo claro e o escuro do sistema. Cada ação tem uma cor própria: Otimizar em vermelho (#ff5a5f), Juntar em azul (#2f8cff) e Imagens para PDF em verde (#2fbf71). A fatia ativa ganha um anel fino brilhando na cor da ação e um fundo suave da mesma cor, e o ícone fica preenchido. O mockup de referência é `docs/superpowers/specs/assets/menu-circular.html`. Ele usa classes do frame do brainstorm, então abra como referência visual, não como código.
+- **Forma:** círculo centralizado no cursor, com 8 fatias de 45° e um miolo central. Posições em sentido horário a partir do topo *(decisão minha)*: Otimizar (topo), Juntar, Dividir, Organizar, Imagens para PDF (base), PDF para JPG, PDF para Markdown, e uma vaga tracejada para a próxima ação.
+- **Visual aprovado ("C + D"):** vidro translúcido no estilo do macOS atual (desfoque e brilho na borda), que segue o modo claro e o escuro do sistema. Cada ação tem uma cor própria: Otimizar em vermelho (#ff5a5f), Juntar em azul (#2f8cff) e Imagens para PDF em verde (#2fbf71). *Decisão minha* para as novas: Dividir em laranja (#ff9f0a), Organizar em roxo (#a970ff), PDF para JPG em âmbar (#e0a800) e PDF para Markdown em verde-água (#22b8b0). O mockup com 8 fatias é `docs/superpowers/specs/assets/menu-circular-8.html`. A fatia ativa ganha um anel fino brilhando na cor da ação e um fundo suave da mesma cor, e o ícone fica preenchido. O mockup de referência é `docs/superpowers/specs/assets/menu-circular.html`. Ele usa classes do frame do brainstorm, então abra como referência visual, não como código.
 - **Miolo:** mostra o que vai acontecer com a fatia sob o cursor: nome da ação, arquivo ou quantidade de arquivos, tamanho atual e limite ("3,4 MB → até 1 MB").
-- **Ações que não servem para a seleção** aparecem apagadas e não respondem: Otimizar sem PDF, Juntar com menos de 2 arquivos, Imagens para PDF sem imagens.
+- **Ações que não servem para a seleção** aparecem apagadas e não respondem. Ao passar o mouse, o miolo mostra o motivo:
+  - Otimizar sem PDF na seleção: "só para PDF".
+  - Juntar com menos de 2 arquivos: "selecione 2 ou mais".
+  - Imagens para PDF quando algum arquivo não é imagem: "só para imagens".
+  - Dividir e Organizar com mais de um arquivo ou sem PDF: "selecione 1 PDF".
+  - Dividir com PDF de 1 página: "o PDF tem só 1 página".
+  - PDF para JPG e PDF para Markdown sem PDF: "só para PDF". Com vários PDFs, processam cada um separadamente.
 - **Interação:** mover o mouse na direção acende a fatia, e clicar executa. Esc, clique fora ou clique no miolo fecha sem fazer nada. O círculo abre e fecha com uma animação curta de escala e desfoque.
 - **Depois do clique:** o miolo mostra o progresso por um instante, o círculo some, e o resultado segue a seção "Saída".
 
@@ -56,6 +68,44 @@ Este é o jeito principal de usar o app, pedido pelo autor.
 - *Decisão minha:* aceita PDFs e imagens misturados na mesma seleção. A imagem vira página.
 - *Decisão minha:* o resultado passa pela regra de limite. O motivo de juntar é anexar no reembolso.
 
+### Dividir PDF
+
+Escolha do autor: abre uma janelinha em vez de agir direto.
+
+- Título "Dividir nota.pdf (8 páginas)". Duas opções:
+  - **Separar todas as páginas** (marcada por padrão): gera uma pasta `nota-paginas/` ao lado do original, com `nota-01.pdf`, `nota-02.pdf` e assim por diante. O número tem zeros à esquerda conforme o total de páginas.
+  - **Extrair páginas:** campo de texto que aceita intervalos como `1-3, 5`. Gera um PDF só, `nota-extraido.pdf`, com as páginas na ordem digitada.
+- Enter confirma e Esc cancela. Intervalo inválido mostra o erro embaixo do campo e não fecha a janela: "Página 9 não existe (o PDF tem 8)" ou "Use números e intervalos, como 1-3, 5".
+- A janela aparece na frente de tudo, perto do cursor, sem trazer o Finder para trás.
+
+### Organizar PDF
+
+*Decisões minhas*, a partir da descrição do iLovePDF que o autor mandou:
+
+- Janela com as miniaturas das páginas em grade, cada uma com o número embaixo.
+- Arrastar reordena. Clique seleciona, e ⌘/⇧ + clique seleciona várias.
+- ⌫ apaga as selecionadas. Botões de girar à esquerda e à direita na barra da janela (também ⌘← e ⌘→).
+- Botão "Adicionar…" (e arrastar arquivos para dentro da janela) acrescenta páginas de outro PDF ou imagem no fim.
+- ⌘Z desfaz.
+- "Salvar" grava `nota-organizado.pdf` ao lado do original e revela no Finder. Fechar com alterações não salvas pergunta se quer descartar.
+- Apagar todas as páginas desabilita o "Salvar".
+
+### PDF para JPG
+
+- *Decisão minha:* só converte páginas em imagem. "Extrair imagens contidas no PDF", que o iLovePDF também oferece, fica de fora.
+- PDF com uma página gera `nota.jpg` ao lado. Com várias páginas, gera a pasta `nota-paginas/` com `nota-01.jpg`, `nota-02.jpg` e assim por diante, e revela a pasta.
+- *Decisão minha:* 150 DPI, qualidade JPEG 0,85, fundo branco nas áreas transparentes.
+
+### PDF para Markdown
+
+- Gera `nota.md` ao lado do original.
+- Títulos: linhas com fonte bem maior que o corpo do texto viram `#` ou `##`, e linhas curtas em negrito viram `###`. O builder define os limiares.
+- Listas: linhas que começam com marcador (•, –, -, *) ou numeração (`1.`, `1)`) viram itens de lista.
+- Links do PDF viram `[texto](url)`.
+- Tabelas viram texto corrido, uma linha por linha da tabela. O autor foi avisado.
+- *Decisão minha:* página sem texto (escaneada) passa por OCR local (Vision, português e inglês), e o texto reconhecido entra como parágrafos.
+- Se o PDF inteiro não tiver texto nenhum, nem com OCR, a ação avisa e não gera arquivo.
+
 ### Saída (vale para todas as ações)
 
 - Nunca sobrescreve o original.
@@ -63,6 +113,7 @@ Este é o jeito principal de usar o app, pedido pelo autor.
   - `nota.pdf` → `nota-otimizado.pdf`
   - `foto.heic` → `foto.pdf`; várias imagens → nome da primeira na ordem + `.pdf`
   - juntar → nome do primeiro na ordem + `-juntado.pdf`
+  - dividir, organizar, PDF para JPG e PDF para Markdown → nomes definidos nas seções acima. A pasta `-paginas` também ganha número se já existir.
 - Se o nome já existir, acrescenta um número (`nota-otimizado 2.pdf`), no padrão do Finder.
 - No fim, revela o arquivo novo no Finder já selecionado, pronto para arrastar no formulário, e mostra uma notificação com o tamanho final ("nota-otimizado.pdf: 3,4 MB → 870 KB").
 - Erros (arquivo corrompido, PDF com senha, limite inalcançável) aparecem como notificação ou alerta, com uma frase que diga o que fazer.
@@ -96,7 +147,8 @@ Todas abaixo são decisões minhas. O autor delegou a escolha técnica e aprovou
 
 - Upload ou qualquer serviço externo.
 - Conversão de e para Word, Excel e PowerPoint.
-- Edição, assinatura, organização de páginas arrastando, tarja e comparação de PDFs (o Preview já cobre parte disso).
+- Edição de conteúdo, assinatura, tarja e comparação de PDFs (o Preview já cobre parte disso).
+- Estrutura de tabela no Markdown.
 - Distribuição para outras pessoas, notarização, App Store, atualização automática.
 - Tela própria para processar arquivos arrastados para dentro do app. O caminho principal é o Finder.
 - Menu circular fora do Finder (em outros apps ou em diálogos de abrir arquivo).
@@ -113,6 +165,7 @@ Todas abaixo são decisões minhas. O autor delegou a escolha técnica e aprovou
 
 - Testes do módulo de ações com arquivos gerados no próprio teste: PDF escaneado grande que cai abaixo de 1 MB; PDF já pequeno, que não gera arquivo; PDF que não chega ao limite no piso, que dá erro e não gera arquivo; HEIC com orientação EXIF; várias imagens em ordem natural; juntar PDF com imagem.
 - Teste manual no Finder com um PDF de reembolso real: ⌥ + clique direito → Otimizar → arquivo novo selecionado, abaixo de 1 MB, legível. Repetir pelo menu normal do Finder.
+- Testes do módulo para as novas ações: dividir todas as páginas (nomes e zeros à esquerda), extrair `1-3, 5` e intervalos inválidos; PDF para JPG com 1 e com várias páginas; Markdown com título, lista, link e página escaneada (OCR); operações do Organizar (mover, apagar, girar, adicionar) no modelo sem interface.
 - Teste manual do menu circular: o menu do Finder não aparece com ⌥, aparece normalmente sem ⌥, a regra de alvo funciona com o arquivo dentro e fora da seleção, as fatias ficam apagadas nos casos certos, Esc fecha, e o visual acompanha o modo claro e o escuro.
 
 ## Fica para o builder
