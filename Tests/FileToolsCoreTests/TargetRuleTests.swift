@@ -26,5 +26,10 @@ import Testing
         #expect(!TargetRule.shouldShowRadial(for: [d]))
         #expect(!TargetRule.shouldShowRadial(for: [txt]))
         #expect(!TargetRule.shouldShowRadial(for: []))
+        let pdf = try Fixtures.write(Fixtures.textPDF(["a"]), named: "a.pdf", in: d)
+        let png = d.appending(path: "a.png")
+        try Fixtures.writeImage(Fixtures.noiseImage(width: 10, height: 10), to: png, type: .png)
+        #expect(TargetRule.shouldShowRadial(for: [pdf]))
+        #expect(TargetRule.shouldShowRadial(for: [png]))
     }
 }
