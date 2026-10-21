@@ -39,6 +39,37 @@ enum Fixtures {
         return image(from: bytes, width: width, height: height)
     }
 
+    private static func scanImage(width: Int, height: Int, seed: UInt64) -> CGImage {
+        var rng = SplitMix64(state: seed)
+        let lineHeight = max(height / 60, 4)
+        let inkHeight = lineHeight * 3 / 5
+        let margin = width / 12
+        var ink = [Bool](repeating: false, count: width * height)
+        for top in stride(from: margin, to: height - margin - lineHeight, by: lineHeight) {
+            var x = margin
+            while x < width - margin {
+                let word = Int(rng.next() % UInt64(max(width / 8, 2))) + width / 40
+                for y in top..<(top + inkHeight) {
+                    for column in x..<min(x + word, width - margin) {
+                        ink[y * width + column] = true
+                    }
+                }
+                x += word + width / 60
+            }
+        }
+        var bytes = [UInt8](repeating: 255, count: width * height * 4)
+        for i in 0..<(width * height) {
+            let r = rng.next()
+            let base = ink[i] ? 45 : 232
+            let gray = base + Int(r & 0x03) - 2
+            for channel in 0..<3 {
+                let tint = Int((r >> (8 + channel * 8)) & 0x01)
+                bytes[i * 4 + channel] = UInt8(clamping: gray + tint)
+            }
+        }
+        return image(from: bytes, width: width, height: height)
+    }
+
     static func transparentImage(width: Int, height: Int) -> CGImage {
         image(from: [UInt8](repeating: 0, count: width * height * 4), width: width, height: height)
     }
@@ -56,7 +87,7 @@ enum Fixtures {
 
     static func scannedPDF(pages: Int, pixelWidth: Int = 1240, pixelHeight: Int = 1754) -> Data {
         pdf(pageCount: pages) { ctx, index in
-            let bitmap = noiseImage(width: pixelWidth, height: pixelHeight, seed: UInt64(index + 1))
+            let bitmap = scanImage(width: pixelWidth, height: pixelHeight, seed: UInt64(index + 1))
             ctx.draw(bitmap, in: a4)
         }
     }

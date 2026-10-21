@@ -17,7 +17,10 @@ public enum JPEGEncoder {
     }
 
     public static func jpegBackedImage(_ image: CGImage, quality: Double) throws(ActionFailure) -> CGImage {
-        let data = try encode(image, quality: quality)
+        try self.image(fromJPEG: encode(image, quality: quality))
+    }
+
+    static func image(fromJPEG data: Data) throws(ActionFailure) -> CGImage {
         // Imagem lida direto do JPEG: o contexto PDF embute os bytes sem recodificar (DCT passthrough).
         guard let provider = CGDataProvider(data: data as CFData),
               let backed = CGImage(
