@@ -132,11 +132,12 @@ final class RadialPanelController {
         model.phase = .running(id)
         let generation = generation
         let point = cgPoint
-        let start = ContinuousClock.now
+        let urls = model.urls
+        Task { [coordinator] in
+            await coordinator.run(id, urls: urls, near: point)
+        }
         Task {
-            await coordinator.run(id, urls: model.urls, near: point)
-            let remaining = AppConstants.Radial.minimumProgress - (ContinuousClock.now - start)
-            if remaining > .zero { try? await Task.sleep(for: remaining) }
+            try? await Task.sleep(for: AppConstants.Radial.minimumProgress)
             guard generation == self.generation else { return }
             close(animated: true)
         }

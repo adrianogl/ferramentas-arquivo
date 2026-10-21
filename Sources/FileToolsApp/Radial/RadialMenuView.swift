@@ -62,10 +62,10 @@ struct RadialMenuView: View {
         return ZStack {
             Circle()
                 .fill(.regularMaterial)
-                .overlay(Circle().fill(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.55)))
-                .overlay(Circle().strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.1 : 0), lineWidth: 1))
-                .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.08), radius: 7, y: 4)
-            VStack(spacing: 2) {
+                .overlay(Circle().fill(Color.white.opacity(colorScheme == .dark ? Metrics.coreTintDark : Metrics.coreTintLight)))
+                .overlay(Circle().strokeBorder(Color.white.opacity(colorScheme == .dark ? Metrics.coreBorderDark : 0), lineWidth: 1))
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0 : Metrics.coreShadowOpacity), radius: Metrics.coreShadowRadius, y: Metrics.coreShadowOffset)
+            VStack(spacing: Metrics.coreLineSpacing) {
                 Text(text.title)
                     .font(.system(size: Metrics.titleSize, weight: .semibold))
                     .lineLimit(2)
@@ -85,7 +85,7 @@ struct RadialMenuView: View {
                 }
             }
             .multilineTextAlignment(.center)
-            .padding(.horizontal, 10)
+            .padding(.horizontal, Metrics.coreTextInset)
         }
         .frame(width: Metrics.coreDiameter, height: Metrics.coreDiameter)
     }
@@ -97,7 +97,7 @@ struct RadialMenuView: View {
             let color = Color(hex: action.colorHex)
             let available = model.isAvailable(id)
             let active = activeAction?.id == id
-            VStack(spacing: 3) {
+            VStack(spacing: Metrics.iconLabelSpacing) {
                 RoundedRectangle(cornerRadius: Metrics.iconCornerRadius, style: .continuous)
                     .fill(active ? color : color.opacity(Metrics.iconFillOpacity))
                     .overlay {
@@ -111,7 +111,7 @@ struct RadialMenuView: View {
                                 .padding(-Metrics.iconRingWidth)
                         }
                     }
-                    .shadow(color: active ? color.opacity(0.55) : .clear, radius: 8, y: 6)
+                    .shadow(color: active ? color.opacity(Metrics.iconGlowOpacity) : .clear, radius: Metrics.iconGlowRadius, y: Metrics.iconGlowOffset)
                     .overlay {
                         Image(systemName: action.symbol)
                             .font(.system(size: Metrics.iconSymbolSize, weight: .semibold))
@@ -127,7 +127,7 @@ struct RadialMenuView: View {
         } else {
             let color = Color(hex: Constants.vacancyColorHex)
             RoundedRectangle(cornerRadius: Metrics.iconCornerRadius, style: .continuous)
-                .strokeBorder(color, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
+                .strokeBorder(color, style: StrokeStyle(lineWidth: 1, dash: Metrics.vacancyDash))
                 .overlay {
                     Image(systemName: Constants.vacancySymbol)
                         .font(.system(size: Metrics.iconSymbolSize, weight: .semibold))
