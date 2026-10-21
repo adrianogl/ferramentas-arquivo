@@ -6,8 +6,10 @@ struct FileToolsApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Ferramentas de Arquivo", systemImage: "doc.badge.gearshape") {
+        MenuBarExtra {
             MenuBarContent(appDelegate: appDelegate)
+        } label: {
+            MenuBarLabel()
         }
         Window(AppConstants.Settings.windowTitle, id: "settings") {
             SettingsView(model: appDelegate.settingsModel)

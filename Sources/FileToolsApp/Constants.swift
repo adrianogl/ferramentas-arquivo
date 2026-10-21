@@ -129,6 +129,12 @@ enum AppConstants {
         static let rightArrowKeyCode: UInt16 = 124
     }
 
+    enum MenuBar {
+        static let iconResource = "MenuBarIcon"
+        static let iconExtension = "pdf"
+        static let fallbackSymbol = "doc.badge.gearshape"
+    }
+
     enum Brand {
         static let navy: UInt32 = 0x0B1B33
         static let blue: UInt32 = 0x2F8CFF
