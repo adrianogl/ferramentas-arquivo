@@ -1,7 +1,7 @@
 # Ferramentas de Arquivo: design
 
 Data: 2026-10-21
-Uso: pessoal, só no Mac do autor (macOS 27, Xcode 27.1, Swift 6.4).
+Uso: open source (licença MIT), distribuído pelo GitHub para quem quiser usar. Desenvolvido no Mac do autor (macOS 27, Xcode 27.1, Swift 6.4).
 
 ## Por que existe
 
@@ -118,6 +118,22 @@ Escolha do autor: abre uma janelinha em vez de agir direto.
 - No fim, revela o arquivo novo no Finder já selecionado, pronto para arrastar no formulário, e mostra uma notificação com o tamanho final ("nota-otimizado.pdf: 3,4 MB → 870 KB").
 - Erros (arquivo corrompido, PDF com senha, limite inalcançável) aparecem como notificação ou alerta, com uma frase que diga o que fazer.
 
+### Assistente de configuração
+
+Pedido do autor, para quem instala não precisar do terminal nem de instruções avulsas. É uma janela de cinco passos que abre na primeira vez que o app roda e de novo sempre que faltar uma permissão (por exemplo, depois de uma atualização, quando o macOS revoga a Acessibilidade de um app sem assinatura estável). Também abre pelo item "Configurar permissões…" do menu da barra.
+
+1. **Boas-vindas:** o que o app faz e que vai pedir duas permissões. Botão "Começar".
+2. **Acessibilidade:** por que precisa ("perceber o ⌥ + clique direito antes do Finder abrir o menu dele; não lê o que você digita nem o conteúdo das janelas") e o caminho nos Ajustes. Botão "Abrir Ajustes do Sistema". A tela verifica a permissão a cada segundo e avança sozinha quando ela é concedida.
+3. **Finder:** pede a permissão de Automação do Finder ("só pergunta quais arquivos estão selecionados; nunca move, apaga ou renomeia nada"). Botão "Pedir permissão", que dispara o aviso do macOS. Mostra as duas permissões com check verde quando ok, e explica onde religar se a pessoa recusar.
+4. **Experimente:** o app cria um `exemplo.pdf` numa pasta temporária, abre essa pasta no Finder e espera o primeiro ⌥ + clique direito nele. Quando o alvo é reconhecido, o passo fica verde e libera "Continuar". Tem "Pular este passo".
+5. **Pronto:** lembra que o app fica na barra de menus e mostra dois ajustes: limite de tamanho (MB) e "Abrir ao iniciar sessão". Botão "Concluir".
+
+Barra inferior com indicador de passos (5 pontos) e botões "Voltar" e a ação principal. Os mockups estão no canvas de marca, na linha "Configuração na primeira abertura".
+
+### Marca
+
+Escolha do autor: **A3 + C marinho**. A marca é um quadrado de cantos arredondados em marinho (#0B1B33) com o canto superior direito dobrado em azul (#2F8CFF), como uma folha. Dentro dele há o anel de oito fatias em branco, com a fatia de cima em azul e a vaga em #34507A. O fundo de apoio é o azul-claro #E8F1FF, e a fonte da marca é DM Sans. A marca é o ícone do app, e o ícone da barra de menus é a versão monocromática (quadrado com o anel vazado), como template image do macOS. As cores das ações no menu circular não mudam.
+
 ### Configurações
 
 O app fica rodando em segundo plano, com um ícone na barra de menus. Pelo ícone, ou abrindo o app pelo Launchpad, aparece uma janela pequena de configurações:
@@ -140,8 +156,9 @@ Todas abaixo são decisões minhas. O autor delegou a escolha técnica e aprovou
 - **Alternativa pelo Finder:** as mesmas três ações também ficam no clique direito normal (Ações Rápidas ou Serviços). Elas funcionam sem as permissões e continuam funcionando se uma atualização do macOS quebrar a captura do clique. Minha aposta é Services (`NSServices`), e o builder valida.
 - **Risco conhecido:** a captura de clique em outro app é a parte frágil. Se não der para impedir o menu do Finder de forma confiável no macOS 27, o builder para e volta ao autor antes de buscar outro gatilho.
 - **Estrutura para crescer.** A lógica de cada ação fica separada da integração com o Finder, num módulo testável (por exemplo, um Swift package local). Cada ação declara os tipos de arquivo que aceita e se exige uma ou várias seleções. Adicionar ação nova deve se resumir a escrever a ação e registrá-la, sem mexer nas outras.
-- **Instalação.** Build local com assinatura ad hoc ou com a conta pessoal no Xcode, copiado para `/Applications`. Sem notarização e sem App Store.
-- **Repositório.** `~/Code/ferramentas-arquivo`, git próprio. Nome do app: o builder escolhe. "Ferramentas de Arquivo" serve.
+- **Distribuição (escolha do autor).** Release no GitHub com um `.zip` do `.app`, assinado ad hoc e **sem notarização**. O README e a landing page explicam a primeira abertura: Ajustes do Sistema → Privacidade e Segurança → "Abrir assim mesmo". Sem conta paga da Apple, sem App Store e sem atualização automática.
+- **Assinatura em desenvolvimento.** O script de build usa a identidade de `SIGN_IDENTITY`. Sem ela, procura uma "Apple Development" no keychain e, se não houver, faz fallback para ad hoc. Nenhum nome de certificado ou e-mail fica no repositório.
+- **Repositório.** `~/Code/ferramentas-arquivo`, git próprio, licença MIT ("Copyright (c) 2026 Adriano Gonçalves"). README em pt-BR com o que o app faz, a instalação pela release, a primeira abertura, as permissões, o build a partir do código e o botão do Buy me a coffee. Nada de dado pessoal além do nome do autor na licença.
 
 ## Fora do escopo
 
@@ -149,7 +166,8 @@ Todas abaixo são decisões minhas. O autor delegou a escolha técnica e aprovou
 - Conversão de e para Word, Excel e PowerPoint.
 - Edição de conteúdo, assinatura, tarja e comparação de PDFs (o Preview já cobre parte disso).
 - Estrutura de tabela no Markdown.
-- Distribuição para outras pessoas, notarização, App Store, atualização automática.
+- Notarização, App Store, Homebrew e atualização automática.
+- Tradução para outros idiomas (o app sai em pt-BR).
 - Tela própria para processar arquivos arrastados para dentro do app. O caminho principal é o Finder.
 - Menu circular fora do Finder (em outros apps ou em diálogos de abrir arquivo).
 

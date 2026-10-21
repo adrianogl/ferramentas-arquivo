@@ -14,7 +14,8 @@
 
 - Deployment target `.macOS(.v26)`. O app roda no macOS 27 do autor. Sem dependências de terceiros e sem rede.
 - Nome do app "Ferramentas de Arquivo", bundle id `dev.aglv.FerramentasArquivo`, `LSUIElement = true`, sem sandbox e sem hardened runtime.
-- Assinatura com a identidade "Apple Development: adgoleva@gmail.com (4W97KN5362)", para as permissões de Acessibilidade e Automação sobreviverem a rebuilds. Ad hoc (`-`) só como fallback, com aviso.
+- Assinatura: em desenvolvimento, a identidade de `SIGN_IDENTITY` ou a primeira "Apple Development" do keychain, para as permissões sobreviverem a rebuilds. Na release, ad hoc (`-`), sem notarização. Nenhum nome de certificado, e-mail ou ID de time no repositório.
+- Open source, licença MIT ("Copyright (c) 2026 Adriano Gonçalves"). Nada de dado pessoal no código, nos testes ou nos docs além disso.
 - 1 MB = 1.000.000 bytes. O arquivo precisa ficar **estritamente abaixo** do limite. O limite padrão é 1 MB e vale só para Otimizar, Imagens para PDF e Juntar.
 - Nunca sobrescrever nem apagar o original. A saída vai na pasta do arquivo de origem e, quando o nome já existe, ganha número no padrão do Finder (`nota-otimizado 2.pdf`, pasta `nota-paginas 2`).
 - Identificadores em inglês. Todo texto visível ao usuário em pt-BR, exatamente como está neste plano.
@@ -220,7 +221,7 @@ Targets: `FileToolsCore` (library), `FileToolsApp` (executableTarget, depende de
 - [ ] **Step 4: Verificar**
 
 Run: `scripts/build-app.sh --install && codesign -dv "/Applications/Ferramentas de Arquivo.app" 2>&1 | grep Authority`
-Expected: `Authority=Apple Development: adgoleva@gmail.com (4W97KN5362)`. O ícone aparece na barra de menus, não aparece no Dock, e "Configurações…" abre a janela.
+Expected: uma linha `Authority=Apple Development: …` (use `codesign -dv --verbose=2`). O ícone aparece na barra de menus, não aparece no Dock, e "Configurações…" abre a janela.
 
 - [ ] **Step 5: Commit (depois da confirmação do autor)** — `feat(app): adiciona app de barra de menus e script de build`
 
@@ -1004,6 +1005,77 @@ Textos do miolo (`{lim}` = limite formatado; `{n}` = número de alvos; `{tot}` =
   - Trocar a tecla vale no próximo clique, porque o tap lê `settings.triggerModifier` a cada evento.
 - [ ] **Step 2: Verificação manual.** Mudar o limite para 0,5 e otimizar um PDF: o resultado fica abaixo de 500 KB, e a notificação diz "abaixo do limite de 500 KB". Trocar a tecla para ⌘: ⌘ + clique direito abre o círculo e ⌥ + clique direito não abre mais. Desligar "Abrir ao iniciar sessão" remove o app de Ajustes → Geral → Itens de Início de Sessão. Revogar a Acessibilidade mostra o aviso laranja.
 - [ ] **Step 3: Commit (depois da confirmação do autor)** — `feat(app): completa janela de configurações`
+
+---
+
+### Task 20: Assistente de configuração
+
+Executar logo depois da Task 3: o passo "Experimente" também é o teste do portão de risco da Task 3, agora feito pelo próprio usuário sem terminal.
+
+**Files:**
+- Create: `Sources/FileToolsApp/Settings/Permissions.swift` (a Task 18 passa a só consumir), `Sources/FileToolsApp/Onboarding/{OnboardingWindowController,OnboardingModel,OnboardingView,SamplePDF}.swift`
+- Create: `Sources/FileToolsCore/Onboarding/OnboardingStep.swift`
+- Modify: `Sources/FileToolsApp/AppDelegate.swift`, `Sources/FileToolsApp/FileToolsApp.swift` (item "Configurar permissões…" no menu), `Sources/FileToolsCore/SettingsStore.swift` (`onboardingCompleted: Bool`, padrão `false`)
+- Test: `Tests/FileToolsCoreTests/OnboardingStepTests.swift`, completar `SettingsStoreTests`
+
+**Interfaces:**
+- Consumes: `RightClickTap`, `FinderTargetResolver`, `SettingsStore`, `PDFAssembler`/`Fixtures`-like geração de PDF de texto (o app gera o exemplo com CoreText, sem depender dos fixtures de teste).
+- Produces:
+  - `public enum OnboardingStep: Int, CaseIterable, Sendable { case welcome, accessibility, finder, tryIt, done; public static func first(accessibility: Bool, finder: Bool, completed: Bool) -> OnboardingStep?; public func canContinue(accessibility: Bool, finder: Bool, triedIt: Bool) -> Bool }`
+  - `@MainActor enum Permissions { static var accessibility: Bool; static func finderAutomation(ask: Bool) -> Bool; static func openAccessibilitySettings(); static func openAutomationSettings() }`
+  - `@MainActor final class OnboardingWindowController { init(settings: SettingsStore); func show(at step: OnboardingStep); var onTryItTarget: (([URL]) -> Void)? }`. O `AppDelegate` chama `onTryItTarget` quando um alvo resolvido contém o `exemplo.pdf` e o assistente está no passo `tryIt`.
+
+Regras de `first`: `completed == false` → `.welcome`; completo mas falta Acessibilidade → `.accessibility`; completo mas falta Finder → `.finder`; tudo ok → `nil` (não abre). `canContinue`: `accessibility` exige a permissão; `finder` exige as duas; `tryIt` exige `triedIt` (o "Pular este passo" avança sem ele); os demais sempre.
+
+- [ ] **Step 1: Testes que falham** — um `@Test` por regra de `first` e de `canContinue` acima, e `SettingsStoreTests.onboardingDefaultsToFalse` + persistência.
+- [ ] **Step 2: Rodar e ver falhar.** `swift test --filter "OnboardingStepTests|SettingsStoreTests"`
+- [ ] **Step 3: Implementar o core** e rodar → PASS.
+- [ ] **Step 4: Implementar a janela** conforme os mockups "Configuração na primeira abertura" do canvas de marca e o texto do spec (seção "Assistente de configuração"), com a marca A3 + C marinho: janela de 620×440, sem redimensionar, centralizada, `NSApp.activate()`. Conteúdo por passo com os textos exatos do spec; rodapé com 5 pontos (o atual alongado, azul #2F8CFF; os seguintes #C9D6EA) e botões. Em `accessibility`, um `Timer` de 1 s reavalia `Permissions.accessibility` e avança sozinho quando concedida; o `RightClickTap` é (re)iniciado nesse momento. Em `finder`, "Pedir permissão" chama `Permissions.finderAutomation(ask: true)` (Apple Event de teste ao Finder, que dispara o aviso). Em `tryIt`, `SamplePDF.make()` grava `exemplo.pdf` (uma página A4 com o texto "Faça ⌥ + clique direito neste arquivo") em `FileManager.default.temporaryDirectory/Ferramentas de Arquivo/`, revela no Finder e espera `onTryItTarget`. Em `done`, campo de limite e toggle de abrir no login ligados ao `SettingsStore`; "Concluir" grava `onboardingCompleted = true` e fecha.
+- [ ] **Step 5: Ligar no `AppDelegate`.** No launch, `OnboardingStep.first(...)` decide se abre e em qual passo. O menu da barra ganha "Configurar permissões…", que abre no primeiro passo pendente (ou no `welcome` se tudo estiver ok).
+- [ ] **Step 6: Verificação.** `swift build` sem warnings, `swift test`, `scripts/build-app.sh --install`. O passo a passo manual fica para o autor: rodar o assistente do início ao fim, inclusive o "Experimente".
+- [ ] **Step 7: Commit** — `feat(app): adiciona assistente de configuração`
+
+---
+
+### Task 21: Ícone do app e da barra de menus
+
+**Files:**
+- Create: `scripts/make-icons.swift` (desenha com Core Graphics, sem dependências), `Resources/AppIcon.icns` (gerado e versionado), `Resources/MenuBarIcon.pdf` (template, gerado e versionado)
+- Modify: `scripts/build-app.sh` (copia os recursos para `Contents/Resources`), `Resources/Info.plist` (`CFBundleIconFile` = `AppIcon`), `Sources/FileToolsApp/FileToolsApp.swift` (`MenuBarExtra` usa a imagem template no lugar do SF Symbol)
+
+- [ ] **Step 1:** `scripts/make-icons.swift`, rodado com `swift scripts/make-icons.swift`, desenha a marca A3 + C marinho exatamente como no spec (seção "Marca"), em coordenadas de 100×100 mapeadas para cada tamanho:
+  - quadrado `M22 6 H70 L94 30 V78 A16 16 0 0 1 78 94 H22 A16 16 0 0 1 6 78 V22 A16 16 0 0 1 22 6 Z` em #0B1B33;
+  - dobra `M70 6 V22 A8 8 0 0 0 78 30 H94 Z` em #2F8CFF;
+  - anel de centro (50, 52), raio 22 e traço 11, em 8 arcos de 45° com 3° de folga: o de cima em #2F8CFF, a vaga (o de cima à esquerda) em #34507A e os outros em branco.
+
+  O script gera um `.iconset` com 16, 32, 64, 128, 256, 512 e 1024 px, roda `iconutil -c icns` e grava `Resources/AppIcon.icns`. Também gera `Resources/MenuBarIcon.pdf` de 18×18 pt: o quadrado preto com o anel vazado (traço 13, sem dobra), para usar como template image.
+- [ ] **Step 2:** `build-app.sh` copia os dois arquivos, o `Info.plist` aponta o ícone e o `MenuBarExtra` carrega `MenuBarIcon.pdf` com `isTemplate = true`.
+- [ ] **Step 3: Verificação.** `swift scripts/make-icons.swift && scripts/build-app.sh --install`. Confira `ls build/*.app/Contents/Resources` (devem aparecer `AppIcon.icns` e `MenuBarIcon.pdf`) e `iconutil -c iconset Resources/AppIcon.icns -o /tmp/check.iconset` (devem sair os 10 PNGs). A conferência visual no Finder e na barra fica para o autor.
+- [ ] **Step 4: Commit** — `feat(app): adiciona ícone do app e da barra de menus`
+
+---
+
+### Task 22: Open source e release
+
+**Files:**
+- Create: `LICENSE` (texto MIT padrão, "Copyright (c) 2026 Adriano Gonçalves"), `scripts/release.sh`, `CONTRIBUTING.md`
+- Modify: `README.md`, `scripts/build-app.sh`
+
+- [ ] **Step 1: `build-app.sh` sem dado pessoal.** Confira que não há nome de certificado, e-mail ou team ID fixo. A ordem de identidade fica `SIGN_IDENTITY` → primeira "Apple Development" do keychain → `-`. Aceita `--adhoc` para forçar `-`.
+- [ ] **Step 2: `scripts/release.sh <versão>`.** Atualiza `CFBundleShortVersionString` numa cópia do `Info.plist` usada no build, roda `build-app.sh --adhoc` e gera `build/Ferramentas-de-Arquivo-<versão>.zip` com `ditto -c -k --keepParent` e o `.sha256` ao lado. Não publica nada: a release no GitHub é criada à mão pelo autor.
+- [ ] **Step 3: README** em pt-BR:
+  - o que o app faz, com as 7 ações;
+  - **Instalação:** baixar o `.zip` da release, arrastar para Aplicativos e fazer a primeira abertura (abrir, ver o aviso, ir em Ajustes do Sistema → Privacidade e Segurança e clicar em "Abrir assim mesmo");
+  - **Permissões:** o assistente pede, e explica por quê;
+  - **Depois de atualizar:** o macOS pode pedir a Acessibilidade de novo, porque a assinatura ad hoc muda a cada versão. O assistente abre sozinho nesse caso;
+  - **Build a partir do código:** Xcode 27+, `swift test`, `scripts/build-app.sh --install`, e a variável `SIGN_IDENTITY` opcional;
+  - licença MIT;
+  - botão do Buy me a coffee (o que já existe).
+- [ ] **Step 4: `CONTRIBUTING.md`** curto: como rodar os testes, as convenções do projeto e o Conventional Commits em pt-BR.
+- [ ] **Step 5: Verificação.** `scripts/release.sh 0.1.0` gera o zip. `unzip -l` mostra o `.app`, e `codesign -dv` no `.app` extraído mostra `Signature=adhoc`. `git grep -nE "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}|TeamIdentifier"` não acha e-mail nem team ID no repositório.
+- [ ] **Step 6: Commit** — `chore: prepara o projeto para open source e release`
+
+Nota para o autor, não para o implementer: commits antigos do plano têm o e-mail do certificado. Antes de publicar o repositório, decidir com o autor se faz squash do histórico.
 
 ---
 
