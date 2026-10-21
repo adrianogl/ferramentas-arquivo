@@ -242,7 +242,7 @@ private struct PermissionRow: View {
             Image(systemName: granted ? "checkmark.circle" : "exclamationmark.circle")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(granted ? Palette.success : Palette.waiting)
-            Text("\(Text(name).bold()) \(granted ? grantedText : "pendente")")
+            Text(granted ? "\(Text(name).bold()) \(grantedText)" : "\(Text(name).bold())")
                 .font(.system(size: 14))
                 .foregroundStyle(granted ? Palette.successText : Palette.waitingText)
         }

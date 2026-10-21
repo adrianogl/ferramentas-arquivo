@@ -16,6 +16,8 @@ final class OnboardingModel {
     private(set) var launchAtLogin: Bool
 
     @ObservationIgnored var onAccessibilityGranted: (() -> Void)?
+    @ObservationIgnored var onRequestAccessibility: (() -> Void)?
+    @ObservationIgnored var commitEdits: (() -> Void)?
     @ObservationIgnored var onFinish: (() -> Void)?
     @ObservationIgnored private let settings: SettingsStore
     @ObservationIgnored private var pollTimer: Timer?
@@ -51,6 +53,7 @@ final class OnboardingModel {
     func advance() {
         guard canContinue else { return }
         if step == .done {
+            commitEdits?()
             settings.onboardingCompleted = true
             onFinish?()
             return
@@ -78,7 +81,11 @@ final class OnboardingModel {
     }
 
     func openAccessibilitySettings() {
-        Permissions.openAccessibilitySettings()
+        if let onRequestAccessibility {
+            onRequestAccessibility()
+        } else {
+            Permissions.openAccessibilitySettings()
+        }
     }
 
     func openAutomationSettings() {

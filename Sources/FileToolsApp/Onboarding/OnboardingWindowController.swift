@@ -9,6 +9,10 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         get { model.onAccessibilityGranted }
         set { model.onAccessibilityGranted = newValue }
     }
+    var onRequestAccessibility: (() -> Void)? {
+        get { model.onRequestAccessibility }
+        set { model.onRequestAccessibility = newValue }
+    }
 
     private let model: OnboardingModel
     private var window: NSWindow?
@@ -17,6 +21,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         model = OnboardingModel(settings: settings)
         super.init()
         onTryItTarget = { [weak model] targets in model?.registerTryIt(targets) }
+        model.commitEdits = { [weak self] in _ = self?.window?.makeFirstResponder(nil) }
         model.onFinish = { [weak self] in self?.window?.close() }
     }
 

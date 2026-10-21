@@ -8,17 +8,14 @@ final class RightClickTap {
     private let onTrigger: (CGPoint) -> Void
     private var machPort: CFMachPort?
     private var swallowingUp = false
-    private var hasPromptedForTrust = false
 
     init(modifier: @escaping () -> TriggerModifier, onTrigger: @escaping (CGPoint) -> Void) {
         self.modifier = modifier
         self.onTrigger = onTrigger
     }
 
-    func start() -> Bool {
+    func start(prompt: Bool = false) -> Bool {
         if machPort != nil { return true }
-        let prompt = !hasPromptedForTrust
-        hasPromptedForTrust = true
         let options = [AppConstants.accessibilityTrustPromptKey: prompt] as CFDictionary
         guard AXIsProcessTrustedWithOptions(options) else { return false }
 

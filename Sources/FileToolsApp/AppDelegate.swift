@@ -7,9 +7,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var tap: RightClickTap?
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
+    private var hasPromptedForAccessibility = false
     private lazy var onboarding: OnboardingWindowController = {
         let controller = OnboardingWindowController(settings: settings)
         controller.onAccessibilityGranted = { [weak self] in self?.startTap() }
+        controller.onRequestAccessibility = { [weak self] in self?.requestAccessibility() }
         return controller
     }()
 
@@ -19,17 +21,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             modifier: { [settings] in settings.triggerModifier },
             onTrigger: { [weak self] point in self?.handleTrigger(at: point) }
         )
-        startTap()
         Task {
             let finder = await Task.detached { Permissions.finderAutomation(ask: false) }.value
-            guard let step = OnboardingStep.first(
+            let step = OnboardingStep.first(
                 accessibility: Permissions.accessibility,
                 finder: finder,
                 completed: settings.onboardingCompleted)
-            else { return }
+            startTap()
+            guard let step else { return }
             Log.app.info("abrindo assistente no passo \(String(describing: step), privacy: .public)")
             onboarding.show(at: step)
         }
+    }
+
+    private func requestAccessibility() {
+        if !hasPromptedForAccessibility, let tap {
+            hasPromptedForAccessibility = true
+            if tap.start(prompt: true) {
+                startTap()
+                return
+            }
+        }
+        Permissions.openAccessibilitySettings()
     }
 
     func showOnboarding() {
