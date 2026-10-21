@@ -24,6 +24,14 @@ import Testing
         #expect(OutputNaming.pagesFolder(for: d.appending(path: "nota.pdf")).lastPathComponent == "nota-paginas 2")
     }
 
+    @Test func collisionKeepsDotsInStem() throws {
+        let d = try Fixtures.tempDirectory()
+        try Data().write(to: d.appending(path: "Recibo 12.03-otimizado.pdf"))
+        #expect(OutputNaming.optimized(for: d.appending(path: "Recibo 12.03.pdf")).lastPathComponent == "Recibo 12.03-otimizado 2.pdf")
+        try FileManager.default.createDirectory(at: d.appending(path: "Extrato 10.2025-paginas"), withIntermediateDirectories: false)
+        #expect(OutputNaming.pagesFolder(for: d.appending(path: "Extrato 10.2025.pdf")).lastPathComponent == "Extrato 10.2025-paginas 2")
+    }
+
     @Test func pageNumbersArePadded() {
         #expect(OutputNaming.pageFileName(base: "nota", index: 1, pageCount: 8, ext: "pdf") == "nota-01.pdf")
         #expect(OutputNaming.pageFileName(base: "nota", index: 7, pageCount: 120, ext: "jpg") == "nota-007.jpg")

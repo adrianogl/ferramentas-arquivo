@@ -41,22 +41,28 @@ public enum OutputNaming {
     }
 
     public static func unique(_ candidate: URL, fileManager: FileManager = .default) -> URL {
-        guard fileManager.fileExists(atPath: candidate.path) else { return candidate }
-        let directory = candidate.deletingLastPathComponent()
-        let ext = candidate.pathExtension
-        let stem = candidate.deletingPathExtension().lastPathComponent
-        var n = 2
-        while true {
-            let name = ext.isEmpty ? "\(stem) \(n)" : "\(stem) \(n).\(ext)"
-            let next = directory.appending(path: name)
-            if !fileManager.fileExists(atPath: next.path) { return next }
-            n += 1
+        unique(
+            directory: candidate.deletingLastPathComponent(),
+            stem: candidate.deletingPathExtension().lastPathComponent,
+            ext: candidate.pathExtension,
+            fileManager: fileManager
+        )
+    }
+
+    private static func unique(directory: URL, stem: String, ext: String, fileManager: FileManager = .default) -> URL {
+        func candidate(_ n: Int?) -> URL {
+            let base = n.map { "\(stem) \($0)" } ?? stem
+            return directory.appending(path: ext.isEmpty ? base : "\(base).\(ext)")
         }
+        var n: Int?
+        while fileManager.fileExists(atPath: candidate(n).path) {
+            n = (n ?? 1) + 1
+        }
+        return candidate(n)
     }
 
     private static func sibling(of source: URL, suffix: String, ext: String) -> URL {
-        let stem = source.deletingPathExtension().lastPathComponent
-        let name = ext.isEmpty ? "\(stem)\(suffix)" : "\(stem)\(suffix).\(ext)"
-        return unique(source.deletingLastPathComponent().appending(path: name))
+        let stem = source.deletingPathExtension().lastPathComponent + suffix
+        return unique(directory: source.deletingLastPathComponent(), stem: stem, ext: ext)
     }
 }
