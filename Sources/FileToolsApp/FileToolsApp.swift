@@ -10,9 +10,9 @@ struct FileToolsApp: App {
             MenuBarContent(appDelegate: appDelegate)
         }
         Window("Ferramentas de Arquivo", id: "settings") {
-            Text("Configurações")
-                .padding()
+            SettingsView(model: appDelegate.settingsModel)
         }
+        .windowResizability(.contentSize)
         .defaultLaunchBehavior(.suppressed)
     }
 }

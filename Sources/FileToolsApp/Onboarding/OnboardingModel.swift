@@ -78,6 +78,7 @@ final class OnboardingModel {
     func setLaunchAtLogin(_ value: Bool) {
         settings.launchAtLogin = value
         launchAtLogin = value
+        LaunchAtLogin.apply(value)
     }
 
     func openAccessibilitySettings() {

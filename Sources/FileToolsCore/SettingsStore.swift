@@ -2,6 +2,8 @@ import Foundation
 
 @MainActor
 public final class SettingsStore {
+    public static let limitMegabytesRange = Constants.limitMegabytesRange
+
     private let defaults: UserDefaults
 
     public init(defaults: UserDefaults = .standard) {

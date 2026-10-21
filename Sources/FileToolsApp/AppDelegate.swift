@@ -5,6 +5,7 @@ import FileToolsCore
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let settings = SettingsStore()
     let notifier = Notifier()
+    private(set) lazy var settingsModel = SettingsModel(settings: settings)
     private(set) lazy var coordinator = ActionCoordinator(settings: settings, notifier: notifier)
     private lazy var serviceProvider = ServiceProvider(coordinator: coordinator)
     private lazy var radial = RadialPanelController(coordinator: coordinator, settings: settings)
@@ -23,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Log.app.info("app iniciado")
+        LaunchAtLogin.apply(settings.launchAtLogin)
         notifier.requestAuthorization()
         NSApp.servicesProvider = serviceProvider
         coordinator.presentSplit = { [weak self] url, pageCount, point in

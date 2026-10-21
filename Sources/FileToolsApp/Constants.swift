@@ -11,6 +11,17 @@ enum AppConstants {
     static let accessibilitySettingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
     static let automationSettingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation")!
 
+    enum Settings {
+        static let windowWidth: CGFloat = 460
+        static let permissionPollInterval: Duration = .seconds(2)
+        static let limitStep = 0.1
+        static let limitFieldWidth: CGFloat = 64
+        static let localeIdentifier = "pt_BR"
+        static let grantedColorHex = "#34c759"
+        static let missingColorHex = "#ff9f0a"
+        static let actionSymbolWidth: CGFloat = 22
+    }
+
     enum Onboarding {
         static let windowSize = CGSize(width: 620, height: 440)
         static let permissionPollInterval: TimeInterval = 1

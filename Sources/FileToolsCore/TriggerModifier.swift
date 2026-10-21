@@ -11,6 +11,14 @@ public enum TriggerModifier: String, CaseIterable, Sendable {
         }
     }
 
+    public var glyph: String {
+        switch self {
+        case .option: "⌥"
+        case .command: "⌘"
+        case .shift: "⇧"
+        }
+    }
+
     public var cgFlag: CGEventFlags {
         switch self {
         case .option: .maskAlternate

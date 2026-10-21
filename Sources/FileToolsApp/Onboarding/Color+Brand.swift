@@ -9,3 +9,10 @@ extension Color {
             blue: Double(hex & 0xFF) / 255)
     }
 }
+
+extension Color {
+    init(hex: String) {
+        let value = UInt32(hex.dropFirst(), radix: 16) ?? 0
+        self.init(brand: value)
+    }
+}
