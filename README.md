@@ -10,11 +10,11 @@ App de barra de menus para macOS que resolve tarefas de PDF e imagem direto no F
 - PDF para JPG
 - PDF para Markdown
 
-As mesmas ações também aparecem no clique direito normal do Finder, em Ações Rápidas. Tudo roda na sua máquina, sem rede, e o arquivo original nunca é sobrescrito: a saída vai para a pasta do original.
+As mesmas ações também aparecem no clique direito normal do Finder, em Serviços. Tudo roda na sua máquina, sem rede, e o arquivo original nunca é sobrescrito: a saída vai para a pasta do original.
 
 ## Instalação
 
-Requer macOS 26 ou mais novo.
+Requer macOS 26 ou mais novo. Roda em Mac com Apple Silicon e em Mac com Intel.
 
 1. Baixe o `.zip` da última release e abra.
 2. Arraste "Ferramentas de Arquivo" para a pasta Aplicativos.
@@ -29,7 +29,7 @@ O assistente de primeira abertura pede e explica cada uma:
 
 ## Depois de atualizar
 
-O macOS pode pedir a Acessibilidade de novo, porque a assinatura ad hoc muda a cada versão. O assistente abre sozinho nesse caso.
+O macOS pode pedir a Acessibilidade de novo, porque a assinatura ad hoc muda a cada versão. O assistente abre sozinho nesse caso. Se o app já aparecer ligado na lista, desligue e ligue de novo (ou remova com − e adicione outra vez).
 
 ## Build a partir do código
 

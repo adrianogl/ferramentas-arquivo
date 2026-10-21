@@ -174,6 +174,10 @@ private struct AccessibilityStep: View {
                     Text("Ative \(strong("Ferramentas de Arquivo")) na lista.")
                         .font(.system(size: 13))
                         .foregroundStyle(Palette.secondary)
+                    Text("Se o app já aparecer ligado na lista, desligue e ligue de novo (ou remova com − e adicione outra vez).")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Palette.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(.horizontal, 16)

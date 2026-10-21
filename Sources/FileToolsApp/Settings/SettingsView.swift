@@ -59,7 +59,7 @@ struct SettingsView: View {
                             .frame(width: AppConstants.Settings.actionSymbolWidth)
                     }
                 }
-                Text("\(model.triggerModifier.glyph) + clique direito no arquivo, ou clique direito → Ações Rápidas.")
+                Text("\(model.triggerModifier.glyph) + clique direito no arquivo, ou clique direito → Serviços.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
