@@ -38,6 +38,15 @@ public final class SettingsStore {
         }
     }
 
+    public var onboardingCompleted: Bool {
+        get {
+            defaults.bool(forKey: Constants.SettingsKey.onboardingCompleted)
+        }
+        set {
+            defaults.set(newValue, forKey: Constants.SettingsKey.onboardingCompleted)
+        }
+    }
+
     public var sizeLimit: SizeLimit {
         .megabytes(limitMegabytes)
     }

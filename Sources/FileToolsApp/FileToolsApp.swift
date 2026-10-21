@@ -7,7 +7,7 @@ struct FileToolsApp: App {
 
     var body: some Scene {
         MenuBarExtra("Ferramentas de Arquivo", systemImage: "doc.badge.gearshape") {
-            MenuBarContent()
+            MenuBarContent(appDelegate: appDelegate)
         }
         Window("Ferramentas de Arquivo", id: "settings") {
             Text("Configurações")
@@ -18,12 +18,16 @@ struct FileToolsApp: App {
 }
 
 private struct MenuBarContent: View {
+    let appDelegate: AppDelegate
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Button("Configurações…") {
             NSApp.activate()
             openWindow(id: "settings")
+        }
+        Button("Configurar permissões…") {
+            appDelegate.showOnboarding()
         }
         Divider()
         Button("Sair") {

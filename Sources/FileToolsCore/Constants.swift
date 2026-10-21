@@ -76,5 +76,6 @@ public enum Constants {
         static let limitMegabytes = "limitMegabytes"
         static let triggerModifier = "triggerModifier"
         static let launchAtLogin = "launchAtLogin"
+        static let onboardingCompleted = "onboardingCompleted"
     }
 }

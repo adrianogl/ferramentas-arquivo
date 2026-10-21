@@ -24,4 +24,15 @@ import Testing
         s.limitMegabytes = 500
         #expect(s.limitMegabytes == 100)
     }
+
+    @Test func onboardingDefaultsToFalse() {
+        let s = SettingsStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+        #expect(!s.onboardingCompleted)
+    }
+
+    @Test func onboardingPersists() {
+        let suite = UUID().uuidString
+        SettingsStore(defaults: UserDefaults(suiteName: suite)!).onboardingCompleted = true
+        #expect(SettingsStore(defaults: UserDefaults(suiteName: suite)!).onboardingCompleted)
+    }
 }
