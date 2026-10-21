@@ -89,6 +89,35 @@ enum AppConstants {
         static let errorGlowRadius: CGFloat = 3
     }
 
+    enum Organize {
+        static let windowSize = CGSize(width: 900, height: 620)
+        static let minimumWindowSize = CGSize(width: 480, height: 360)
+        static let thumbnailSize = CGSize(width: 184, height: 252)
+        static let thumbnailMaxPixelSize = 252
+        static let paperSize = CGSize(width: 92, height: 126)
+        static let paperCornerRadius: CGFloat = 4
+        static let paperShadowOpacity = 0.18
+        static let paperShadowRadius: CGFloat = 1.5
+        static let cellMinimumWidth: CGFloat = 120
+        static let gridSpacing: CGFloat = 18
+        static let gridPadding: CGFloat = 18
+        static let labelSpacing: CGFloat = 8
+        static let numberSize: CGFloat = 11
+        static let pillHorizontalPadding: CGFloat = 5
+        static let pillCornerRadius: CGFloat = 4
+        static let selection: UInt32 = 0x0A63D6
+        static let selectionWidth: CGFloat = 3
+        static let targetDash: [CGFloat] = [5, 3]
+        static let statusSize: CGFloat = 12
+        static let statusHorizontalPadding: CGFloat = 16
+        static let statusVerticalPadding: CGFloat = 10
+        static let rotationStep = 90
+        static let deleteKeyCode: UInt16 = 51
+        static let forwardDeleteKeyCode: UInt16 = 117
+        static let leftArrowKeyCode: UInt16 = 123
+        static let rightArrowKeyCode: UInt16 = 124
+    }
+
     enum Brand {
         static let navy: UInt32 = 0x0B1B33
         static let blue: UInt32 = 0x2F8CFF

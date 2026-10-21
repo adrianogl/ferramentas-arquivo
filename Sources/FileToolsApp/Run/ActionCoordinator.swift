@@ -43,8 +43,12 @@ final class ActionCoordinator {
         }
     }
 
+    func messages(for report: ActionReport, action: ActionID) -> [UserMessage] {
+        ReportFormatter.messages(for: report, action: action, limit: settings.sizeLimit)
+    }
+
     func deliver(_ report: ActionReport, action: ActionID) {
-        notifier.post(ReportFormatter.messages(for: report, action: action, limit: settings.sizeLimit))
+        notifier.post(messages(for: report, action: action))
         guard !report.outputs.isEmpty else { return }
         NSWorkspace.shared.activateFileViewerSelecting(report.outputs.map(\.url))
     }

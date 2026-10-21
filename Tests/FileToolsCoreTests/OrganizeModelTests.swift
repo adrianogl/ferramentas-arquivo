@@ -84,3 +84,38 @@ import Testing
         #expect(m.pages.count == 1)
     }
 }
+
+@Suite struct OrganizeDropIndexTests {
+    private func model(pages: Int) throws -> (OrganizeModel, URL) {
+        let d = try Fixtures.tempDirectory()
+        let url = try Fixtures.write(Fixtures.textPDF((0..<pages).map { "p\($0)" }), named: "nota.pdf", in: d)
+        return (try OrganizeModel(pdf: url), d)
+    }
+
+    @Test func dropBackwardLandsOnTargetPosition() throws {
+        var (m, d) = try model(pages: 8)
+        defer { try? FileManager.default.removeItem(at: d) }
+        let ids = m.pages.map(\.id)
+        let index = try #require(m.dropIndex(moving: [ids[4]], onto: ids[2]))
+        m.move([ids[4]], to: index)
+        #expect(m.pages.map(\.id) == [ids[0], ids[1], ids[4], ids[2], ids[3], ids[5], ids[6], ids[7]])
+    }
+
+    @Test func dropForwardLandsOnTargetPosition() throws {
+        var (m, d) = try model(pages: 8)
+        defer { try? FileManager.default.removeItem(at: d) }
+        let ids = m.pages.map(\.id)
+        let index = try #require(m.dropIndex(moving: [ids[1], ids[2]], onto: ids[5]))
+        m.move([ids[1], ids[2]], to: index)
+        #expect(m.pages.map(\.id) == [ids[0], ids[3], ids[4], ids[5], ids[1], ids[2], ids[6], ids[7]])
+    }
+
+    @Test func dropOntoItselfOrUnknownIsIgnored() throws {
+        let (m, d) = try model(pages: 3)
+        defer { try? FileManager.default.removeItem(at: d) }
+        let ids = m.pages.map(\.id)
+        #expect(m.dropIndex(moving: [ids[1]], onto: ids[1]) == nil)
+        #expect(m.dropIndex(moving: [UUID()], onto: ids[1]) == nil)
+        #expect(m.dropIndex(moving: [ids[0]], onto: UUID()) == nil)
+    }
+}

@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var serviceProvider = ServiceProvider(coordinator: coordinator)
     private lazy var radial = RadialPanelController(coordinator: coordinator, settings: settings)
     private lazy var split = SplitDialogController(coordinator: coordinator)
+    private var organizeWindows: [URL: OrganizeWindowController] = [:]
     private var tap: RightClickTap?
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
@@ -27,6 +28,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         coordinator.presentSplit = { [weak self] url, pageCount, point in
             self?.split.present(for: url, pageCount: pageCount, near: point)
         }
+        coordinator.presentOrganize = { [weak self] url in
+            self?.presentOrganize(url)
+        }
         NSUpdateDynamicServices()
         tap = RightClickTap(
             modifier: { [settings] in settings.triggerModifier },
@@ -42,6 +46,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let step else { return }
             Log.app.info("abrindo assistente no passo \(String(describing: step), privacy: .public)")
             onboarding.show(at: step)
+        }
+    }
+
+    private func presentOrganize(_ url: URL) {
+        let key = url.standardizedFileURL.resolvingSymlinksInPath()
+        if let existing = organizeWindows[key] {
+            existing.show()
+            return
+        }
+        do throws(ActionFailure) {
+            let controller = try OrganizeWindowController(url: url, coordinator: coordinator)
+            controller.onClose = { [weak self] in self?.organizeWindows[key] = nil }
+            organizeWindows[key] = controller
+            controller.show()
+        } catch {
+            coordinator.deliver(ActionReport(failures: [ActionReport.Failure(url: url, reason: error)]), action: .organizePDF)
         }
     }
 

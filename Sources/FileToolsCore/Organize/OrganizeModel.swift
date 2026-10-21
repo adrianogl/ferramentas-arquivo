@@ -19,6 +19,14 @@ public struct OrganizeModel: Sendable, Equatable {
         pages = remaining
     }
 
+    public func dropIndex(moving ids: Set<UUID>, onto target: UUID) -> Int? {
+        guard !ids.contains(target),
+              let targetIndex = pages.firstIndex(where: { $0.id == target }),
+              let firstMoved = pages.firstIndex(where: { ids.contains($0.id) })
+        else { return nil }
+        return firstMoved < targetIndex ? targetIndex + 1 : targetIndex
+    }
+
     public mutating func delete(_ ids: Set<UUID>) {
         pages.removeAll { ids.contains($0.id) }
     }
