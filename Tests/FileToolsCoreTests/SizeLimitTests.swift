@@ -11,4 +11,10 @@ import Testing
     }
 
     @Test func fractional() { #expect(SizeLimit.megabytes(1.5).bytes == 1_500_000) }
+
+    @Test func nonFiniteFallsBackToDefault() {
+        #expect(SizeLimit.megabytes(.nan).bytes == 1_000_000)
+        #expect(SizeLimit.megabytes(.infinity).bytes == 1_000_000)
+        #expect(SizeLimit.megabytes(-.infinity).bytes == 1_000_000)
+    }
 }

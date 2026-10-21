@@ -26,6 +26,14 @@ import Testing
         #expect(LimitInput.normalize("1,25", previous: 2) == 1.25)
     }
 
+    @Test func rejectsNonFiniteText() {
+        for text in ["NaN", "nan", "inf", "-inf", "Infinity"] {
+            #expect(LimitInput.parse(text) == nil)
+            #expect(LimitInput.liveValue(text) == nil)
+            #expect(LimitInput.normalize(text, previous: 2) == 2)
+        }
+    }
+
     @Test func formatUsesComma() {
         #expect(LimitInput.format(0.5) == "0,5")
         #expect(LimitInput.format(1) == "1")

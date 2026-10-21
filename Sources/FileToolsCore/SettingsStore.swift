@@ -12,12 +12,15 @@ public final class SettingsStore {
 
     public var limitMegabytes: Double {
         get {
-            guard let stored = defaults.object(forKey: Constants.SettingsKey.limitMegabytes) as? Double else {
+            guard let stored = defaults.object(forKey: Constants.SettingsKey.limitMegabytes) as? Double,
+                  stored.isFinite
+            else {
                 return Constants.defaultLimitMegabytes
             }
             return Self.clamp(stored)
         }
         set {
+            guard newValue.isFinite else { return }
             defaults.set(Self.clamp(newValue), forKey: Constants.SettingsKey.limitMegabytes)
         }
     }

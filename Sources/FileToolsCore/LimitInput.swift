@@ -4,7 +4,10 @@ public enum LimitInput {
     public static let locale = Locale(identifier: Constants.limitInputLocaleIdentifier)
 
     public static func parse(_ text: String) -> Double? {
-        try? Double(text.trimmingCharacters(in: .whitespaces), format: .number.locale(locale))
+        guard let value = try? Double(text.trimmingCharacters(in: .whitespaces), format: .number.locale(locale)),
+              value.isFinite
+        else { return nil }
+        return value
     }
 
     public static func liveValue(_ text: String) -> Double? {

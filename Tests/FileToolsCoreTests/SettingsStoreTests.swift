@@ -25,6 +25,24 @@ import Testing
         #expect(s.limitMegabytes == 100)
     }
 
+    @Test func ignoresNonFiniteLimit() {
+        let s = SettingsStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+        s.limitMegabytes = 2.5
+        s.limitMegabytes = .nan
+        #expect(s.limitMegabytes == 2.5)
+        s.limitMegabytes = .infinity
+        #expect(s.limitMegabytes == 2.5)
+        #expect(s.sizeLimit.bytes == 2_500_000)
+    }
+
+    @Test func storedNonFiniteLimitFallsBackToDefault() {
+        let defaults = UserDefaults(suiteName: UUID().uuidString)!
+        defaults.set(Double.nan, forKey: "limitMegabytes")
+        let s = SettingsStore(defaults: defaults)
+        #expect(s.limitMegabytes == 1.0)
+        #expect(s.sizeLimit.bytes == 1_000_000)
+    }
+
     @Test func onboardingDefaultsToFalse() {
         let s = SettingsStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
         #expect(!s.onboardingCompleted)
