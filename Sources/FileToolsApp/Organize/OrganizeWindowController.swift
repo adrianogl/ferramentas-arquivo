@@ -91,6 +91,7 @@ final class OrganizeWindowController: NSObject, NSWindowDelegate {
 
     private func handleKey(_ event: NSEvent) -> Bool {
         guard let window, event.window === window, window.attachedSheet == nil else { return false }
+        if viewModel.isSaving { return true }
         let flags = event.modifierFlags.intersection([.command, .shift, .option, .control])
         let key = event.charactersIgnoringModifiers?.lowercased()
         switch (event.keyCode, flags) {
@@ -113,7 +114,7 @@ final class OrganizeWindowController: NSObject, NSWindowDelegate {
     }
 
     private func add() {
-        guard let window else { return }
+        guard let window, !viewModel.isSaving else { return }
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.pdf, .image]
         panel.allowsMultipleSelection = true

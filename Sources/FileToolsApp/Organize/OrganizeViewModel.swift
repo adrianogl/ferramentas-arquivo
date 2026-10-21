@@ -26,6 +26,7 @@ final class OrganizeViewModel {
     var hasUnsavedChanges: Bool { model != savedModel }
     var canSave: Bool { model.canSave && !isSaving }
     var hasSelection: Bool { !selection.ids.isEmpty }
+    var canEditSelection: Bool { hasSelection && !isSaving }
 
     func click(_ id: UUID, gesture: PageSelection.Gesture) {
         selection.click(id, gesture: gesture, order: model.pages.map(\.id))
@@ -50,6 +51,7 @@ final class OrganizeViewModel {
     }
 
     func drop(_ items: [String], onto target: UUID) -> Bool {
+        guard !isSaving else { return false }
         if let dragged = items.lazy.compactMap(UUID.init(uuidString:)).first {
             return move(dragged, onto: target)
         }
@@ -60,6 +62,7 @@ final class OrganizeViewModel {
     }
 
     func append(_ urls: [URL]) {
+        guard !isSaving else { return }
         var next = model
         var failures: [ActionReport.Failure] = []
         for url in urls {
@@ -89,7 +92,7 @@ final class OrganizeViewModel {
 
     private func apply(_ next: OrganizeModel, actionName: String) {
         let previous = model
-        guard next != previous else { return }
+        guard !isSaving, next != previous else { return }
         model = next
         selection.prune(to: next.pages.map(\.id))
         undoManager?.registerUndo(withTarget: self) { target in

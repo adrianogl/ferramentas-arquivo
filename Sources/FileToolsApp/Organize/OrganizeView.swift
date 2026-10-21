@@ -15,9 +15,11 @@ struct OrganizeView: View {
             .contentShape(Rectangle())
             .onTapGesture(perform: viewModel.clearSelection)
             .dropDestination(for: URL.self) { urls, _ in
+                guard !viewModel.isSaving else { return false }
                 viewModel.append(urls)
                 return true
             }
+            .disabled(viewModel.isSaving)
             Divider()
             StatusBar(viewModel: viewModel)
         }
@@ -29,24 +31,25 @@ struct OrganizeView: View {
                     Label("Girar à esquerda", systemImage: "rotate.left")
                 }
                 .help("Girar à esquerda (⌘←)")
-                .disabled(!viewModel.hasSelection)
+                .disabled(!viewModel.canEditSelection)
                 Button {
                     viewModel.rotateSelection(by: AppConstants.Organize.rotationStep)
                 } label: {
                     Label("Girar à direita", systemImage: "rotate.right")
                 }
                 .help("Girar à direita (⌘→)")
-                .disabled(!viewModel.hasSelection)
+                .disabled(!viewModel.canEditSelection)
                 Button {
                     viewModel.deleteSelection()
                 } label: {
                     Label("Apagar", systemImage: "trash")
                 }
                 .help("Apagar (⌫)")
-                .disabled(!viewModel.hasSelection)
+                .disabled(!viewModel.canEditSelection)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button("Adicionar…") { viewModel.onAdd?() }
+                    .disabled(viewModel.isSaving)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button("Salvar") { viewModel.onSave?() }
