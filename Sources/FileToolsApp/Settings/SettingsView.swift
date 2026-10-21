@@ -1,11 +1,11 @@
 import FileToolsCore
+import AppKit
 import SwiftUI
 
 struct SettingsView: View {
     let model: SettingsModel
     @State private var limitText = ""
-
-    private var locale: Locale { Locale(identifier: AppConstants.Settings.localeIdentifier) }
+    @FocusState private var limitFocused: Bool
 
     var body: some View {
         Form {
@@ -16,7 +16,16 @@ struct SettingsView: View {
                             .labelsHidden()
                             .multilineTextAlignment(.trailing)
                             .frame(width: AppConstants.Settings.limitFieldWidth)
-                            .onChange(of: limitText) { _, text in commit(text) }
+                            .focused($limitFocused)
+                            .onSubmit(finishEditingLimit)
+                            .onChange(of: limitText) { _, text in
+                                if let value = LimitInput.liveValue(text), value != model.limitMegabytes {
+                                    model.setLimitMegabytes(value)
+                                }
+                            }
+                            .onChange(of: limitFocused) { _, focused in
+                                if !focused { finishEditingLimit() }
+                            }
                         Text("MB")
                         Stepper(
                             "Tamanho máximo",
@@ -60,44 +69,63 @@ struct SettingsView: View {
         .fixedSize(horizontal: false, vertical: true)
         .onAppear {
             model.reload()
-            limitText = format(model.limitMegabytes)
+            limitText = LimitInput.format(model.limitMegabytes)
         }
         .onChange(of: model.limitMegabytes) { _, value in
-            if parse(limitText) != value { limitText = format(value) }
+            if LimitInput.parse(limitText) != value { limitText = LimitInput.format(value) }
         }
-        .task { await model.pollPermissions() }
+        .onAppear { model.startPolling() }
+        .onDisappear {
+            finishEditingLimit()
+            model.stopPolling()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { note in
+            if isSettingsWindow(note) {
+                model.reload()
+                model.startPolling()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { note in
+            if isSettingsWindow(note) { model.stopPolling() }
+        }
     }
 
-    private func commit(_ text: String) {
-        guard let value = parse(text), SettingsStore.limitMegabytesRange.contains(value) else { return }
-        if value != model.limitMegabytes { model.setLimitMegabytes(value) }
+    private func isSettingsWindow(_ note: Notification) -> Bool {
+        (note.object as? NSWindow)?.title == AppConstants.Settings.windowTitle
     }
 
-    private func parse(_ text: String) -> Double? {
-        try? Double(text.trimmingCharacters(in: .whitespaces), format: .number.locale(locale))
-    }
-
-    private func format(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(0...1)).locale(locale))
+    private func finishEditingLimit() {
+        let value = LimitInput.normalize(limitText, previous: model.limitMegabytes)
+        model.setLimitMegabytes(value)
+        limitText = LimitInput.format(model.limitMegabytes)
     }
 }
 
 private struct PermissionRow: View {
     let title: String
-    let granted: Bool
+    let granted: Bool?
     let open: () -> Void
 
     var body: some View {
         LabeledContent {
-            if !granted {
+            if granted == false {
                 Button("Abrir Ajustes", action: open)
             }
         } label: {
             Label {
                 Text(title)
             } icon: {
-                Image(systemName: granted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundStyle(Color(hex: granted ? AppConstants.Settings.grantedColorHex : AppConstants.Settings.missingColorHex))
+                switch granted {
+                case true?:
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Color(hex: AppConstants.Settings.grantedColorHex))
+                case false?:
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(Color(hex: AppConstants.Settings.missingColorHex))
+                case nil:
+                    Image(systemName: "circle.dotted")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }

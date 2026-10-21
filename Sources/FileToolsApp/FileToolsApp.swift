@@ -9,7 +9,7 @@ struct FileToolsApp: App {
         MenuBarExtra("Ferramentas de Arquivo", systemImage: "doc.badge.gearshape") {
             MenuBarContent(appDelegate: appDelegate)
         }
-        Window("Ferramentas de Arquivo", id: "settings") {
+        Window(AppConstants.Settings.windowTitle, id: "settings") {
             SettingsView(model: appDelegate.settingsModel)
         }
         .windowResizability(.contentSize)

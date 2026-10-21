@@ -25,7 +25,7 @@ final class OnboardingModel {
     init(settings: SettingsStore) {
         self.settings = settings
         limitMegabytes = settings.limitMegabytes
-        launchAtLogin = settings.launchAtLogin
+        launchAtLogin = settings.onboardingCompleted ? LaunchAtLogin.isEnabled : settings.launchAtLogin
     }
 
     var canContinue: Bool {
@@ -34,7 +34,7 @@ final class OnboardingModel {
 
     func start(at step: OnboardingStep) {
         limitMegabytes = settings.limitMegabytes
-        launchAtLogin = settings.launchAtLogin
+        launchAtLogin = settings.onboardingCompleted ? LaunchAtLogin.isEnabled : settings.launchAtLogin
         go(to: step)
         refreshPermissions()
         guard pollTimer == nil else { return }
@@ -55,6 +55,7 @@ final class OnboardingModel {
         if step == .done {
             commitEdits?()
             settings.onboardingCompleted = true
+            settings.launchAtLogin = LaunchAtLogin.apply(launchAtLogin)
             onFinish?()
             return
         }
@@ -78,7 +79,6 @@ final class OnboardingModel {
     func setLaunchAtLogin(_ value: Bool) {
         settings.launchAtLogin = value
         launchAtLogin = value
-        LaunchAtLogin.apply(value)
     }
 
     func openAccessibilitySettings() {

@@ -5,6 +5,7 @@ public enum Constants {
     static let bytesPerMegabyte = 1_000_000.0
     static let defaultLimitMegabytes = 1.0
     static let limitMegabytesRange = 0.1...100.0
+    static let limitInputLocaleIdentifier = "pt_BR"
     static let minimumPageNumberWidth = 2
     static let normalWindowLayer = 0
     public static let imagePageLongSide: CGFloat = 842

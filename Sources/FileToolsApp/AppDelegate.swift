@@ -24,7 +24,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Log.app.info("app iniciado")
-        LaunchAtLogin.apply(settings.launchAtLogin)
         notifier.requestAuthorization()
         NSApp.servicesProvider = serviceProvider
         coordinator.presentSplit = { [weak self] url, pageCount, point in

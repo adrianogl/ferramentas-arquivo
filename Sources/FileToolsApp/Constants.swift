@@ -16,7 +16,7 @@ enum AppConstants {
         static let permissionPollInterval: Duration = .seconds(2)
         static let limitStep = 0.1
         static let limitFieldWidth: CGFloat = 64
-        static let localeIdentifier = "pt_BR"
+        static let windowTitle = "Ferramentas de Arquivo"
         static let grantedColorHex = "#34c759"
         static let missingColorHex = "#ff9f0a"
         static let actionSymbolWidth: CGFloat = 22
