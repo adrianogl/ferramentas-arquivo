@@ -51,6 +51,20 @@ import Testing
         #expect(smallest < d.count)
     }
 
+    @Test func unreachableReportsAssembledFloorSize() throws {
+        let d = Fixtures.scannedPDF(pages: 12)
+        let floor = try #require(Constants.rasterLadder.last)
+        let floorOnly = try PDFCompressor(ladder: [floor]).compress(d, limit: SizeLimit(bytes: 1))
+        guard case let .unreachable(floorBytes) = floorOnly,
+              case let .unreachable(smallest) = try PDFCompressor().compress(d, limit: .megabytes(1))
+        else {
+            Issue.record()
+            return
+        }
+        #expect(smallest == floorBytes)
+        #expect(smallest > 1_500_000)
+    }
+
     @Test func largeDocumentCompletes() throws {
         let d = Fixtures.scannedPDF(pages: 30, pixelWidth: 827, pixelHeight: 1169)
         guard case let .compressed(out, _, _) = try PDFCompressor().compress(d, limit: .megabytes(5)) else {

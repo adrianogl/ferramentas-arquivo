@@ -16,13 +16,12 @@ public struct PDFCompressor: Sendable {
         guard pages.count == document.pageCount else { throw .unreadable }
         let scanned = Set(pages.indices.filter { ScannedPageDetector.isScanned(pages[$0]) })
         var smallest = Int.max
-        for step in steps(scannedCount: scanned.count, pageCount: pages.count) {
+        let steps = steps(scannedCount: scanned.count, pageCount: pages.count)
+        for (position, step) in steps.enumerated() {
             let targets = step.mode == .allPages ? Set(pages.indices) : scanned
-            let raster = try rasterize(pages, targets: targets, quality: step.quality, budget: limit.bytes)
-            guard let sources = raster.sources else {
-                smallest = min(smallest, raster.jpegBytes)
-                continue
-            }
+            let budget = position == steps.count - 1 ? Int.max : limit.bytes
+            guard let sources = try rasterize(pages, targets: targets, quality: step.quality, budget: budget)
+            else { continue }
             let output = try withExtendedLifetime(document) { () throws(ActionFailure) -> Data in
                 try PDFAssembler.assemble(sources)
             }
@@ -47,7 +46,7 @@ public struct PDFCompressor: Sendable {
 
     private func rasterize(
         _ pages: [PDFPage], targets: Set<Int>, quality: RasterQuality, budget: Int
-    ) throws(ActionFailure) -> (sources: [PDFPageSource]?, jpegBytes: Int) {
+    ) throws(ActionFailure) -> [PDFPageSource]? {
         var sources: [PDFPageSource] = []
         var jpegBytes = 0
         for (index, page) in pages.enumerated() {
@@ -64,9 +63,9 @@ public struct PDFCompressor: Sendable {
             }
             let (image, byteCount) = try result.get()
             jpegBytes += byteCount
-            if jpegBytes > budget { return (nil, jpegBytes) }
+            if jpegBytes > budget { return nil }
             sources.append(.image(image, pageSize: PDFPageGeometry.displaySize(of: page)))
         }
-        return (sources, jpegBytes)
+        return sources
     }
 }
