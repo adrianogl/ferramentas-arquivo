@@ -64,6 +64,14 @@ public enum Constants {
         static let pagesFolder = "-paginas"
     }
 
+    enum Markdown {
+        static let headingRatio = 1.6
+        static let subheadingRatio = 1.2
+        static let maxBoldHeadingLength = 80
+        static let ocrDPI = 200.0
+        static let ocrLanguages = ["pt-BR", "en-US"]
+    }
+
     enum SettingsKey {
         static let limitMegabytes = "limitMegabytes"
         static let triggerModifier = "triggerModifier"

@@ -2,6 +2,7 @@ import CoreGraphics
 import CoreText
 import Foundation
 import ImageIO
+import PDFKit
 import UniformTypeIdentifiers
 
 struct SplitMix64: RandomNumberGenerator {
@@ -98,6 +99,45 @@ enum Fixtures {
         }
     }
 
+    static func scannedTextPDF(_ text: String) -> Data {
+        pdf(pageCount: 1) { ctx, _ in
+            drawTextBitmap(text, in: ctx)
+        }
+    }
+
+    static func richPDF() -> Data {
+        let lines: [(String, String, CGFloat)] = [
+            ("Relatório de Despesas", "Helvetica-Bold", 24),
+            ("Resumo", "Helvetica", 15),
+            ("Itens pagos", "Helvetica-Bold", 12),
+            ("Este relatório lista as despesas da viagem de outubro.", "Helvetica", 12),
+            ("Os valores foram conferidos com os recibos originais.", "Helvetica", 12),
+            ("• Táxi", "Helvetica", 12),
+            ("• Hotel", "Helvetica", 12),
+            ("1. Primeiro", "Helvetica", 12),
+            ("2) Segundo", "Helvetica", 12),
+            ("Mais em site", "Helvetica", 12),
+        ]
+        let data = pdf(pageCount: 2) { ctx, index in
+            guard index == 0 else {
+                drawTextBitmap("TOTAL 123", in: ctx)
+                return
+            }
+            var y: CGFloat = 780
+            for (text, fontName, size) in lines {
+                drawText(text, in: ctx, at: CGPoint(x: 72, y: y), pointSize: size, fontName: fontName)
+                y -= size * 2.2
+            }
+        }
+        let document = PDFDocument(data: data)!
+        let page = document.page(at: 0)!
+        let selection = document.findString("site", withOptions: []).first { $0.pages.contains(page) }!
+        let link = PDFAnnotation(bounds: selection.bounds(for: page), forType: .link, withProperties: nil)
+        link.url = URL(string: "https://example.com")
+        page.addAnnotation(link)
+        return document.dataRepresentation()!
+    }
+
     static func logoPDF() -> Data {
         pdf(pageCount: 1) { ctx, _ in
             drawText("Documento com logo", in: ctx, at: CGPoint(x: 72, y: 700), pointSize: 12)
@@ -140,8 +180,15 @@ enum Fixtures {
         )!
     }
 
-    private static func drawText(_ text: String, in ctx: CGContext, at point: CGPoint, pointSize: CGFloat) {
-        let font = CTFontCreateWithName("Helvetica" as CFString, pointSize, nil)
+    private static func drawTextBitmap(_ text: String, in ctx: CGContext) {
+        let bitmap = textImage(text, width: 1240, height: 300, pointSize: 48)
+        ctx.draw(bitmap, in: CGRect(x: 0, y: 600, width: 595, height: 144))
+    }
+
+    private static func drawText(
+        _ text: String, in ctx: CGContext, at point: CGPoint, pointSize: CGFloat, fontName: String = "Helvetica"
+    ) {
+        let font = CTFontCreateWithName(fontName as CFString, pointSize, nil)
         let attributes: [NSAttributedString.Key: Any] = [
             NSAttributedString.Key(kCTFontAttributeName as String): font,
             NSAttributedString.Key(kCTForegroundColorFromContextAttributeName as String): true,
