@@ -52,10 +52,12 @@ final class RightClickTap {
     fileprivate func shouldSwallow(type: CGEventType, flags: CGEventFlags, location: CGPoint, isSynthetic: Bool) -> Bool {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
+            swallowingUp = false
             if let machPort { CGEvent.tapEnable(tap: machPort, enable: true) }
             Log.trigger.info("religando tap")
             return false
         case .rightMouseDown:
+            swallowingUp = false
             guard !isSynthetic,
                   flags.contains(modifier().cgFlag),
                   FinderWindowLocator.isFinderUnder(location)

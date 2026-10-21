@@ -48,12 +48,18 @@ enum FinderTargetResolver {
         postLeftClick(at: point)
         try? await Task.sleep(for: AppConstants.selectionSettleDelay)
         let after = FinderScripting.selection()
+        if !before.isEmpty, selectionKeys(after) != selectionKeys(before) {
+            FinderScripting.select(before)
+        }
         if after.isEmpty { return nil }
         if after.count == 1, TargetRule.resolve(selection: before, clicked: after[0]) == before {
-            FinderScripting.select(before)
             return before
         }
         return after
+    }
+
+    private static func selectionKeys(_ urls: [URL]) -> Set<String> {
+        Set(urls.map { $0.standardizedFileURL.path.precomposedStringWithCanonicalMapping })
     }
 
     private static func postLeftClick(at point: CGPoint) {
