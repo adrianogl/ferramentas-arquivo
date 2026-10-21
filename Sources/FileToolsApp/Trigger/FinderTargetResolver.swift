@@ -4,38 +4,67 @@ import FileToolsCore
 
 @MainActor
 enum FinderTargetResolver {
+    private static let systemWide: AXUIElement = {
+        let element = AXUIElementCreateSystemWide()
+        AXUIElementSetMessagingTimeout(element, AppConstants.hitTestMessagingTimeout)
+        return element
+    }()
+
     static func resolve(at point: CGPoint) async -> [URL]? {
-        let before = FinderScripting.selection()
+        let hit = hitTest(at: point)
         let targets: [URL]?
-        if let clicked = itemUnderCursor(at: point) {
-            targets = TargetRule.resolve(selection: before, clicked: clicked)
+        if let clicked = hit?.url {
+            targets = TargetRule.resolve(selection: FinderScripting.selection(), clicked: clicked)
+        } else if let hit, ClickTargetRule.allowsSyntheticClick(path: hit.path) {
+            targets = await selectByClicking(at: point, before: FinderScripting.selection())
         } else {
-            targets = await selectByClicking(at: point, before: before)
+            let roles = hit?.path.map(\.role).joined(separator: " < ") ?? "nenhum elemento"
+            Log.trigger.info("⌥+clique fora da área de arquivos: \(roles, privacy: .public)")
+            targets = nil
         }
         guard let targets, TargetRule.shouldShowRadial(for: targets) else { return nil }
         return targets
     }
 
-    private static func itemUnderCursor(at point: CGPoint) -> URL? {
+    private static func hitTest(at point: CGPoint) -> (url: URL?, path: [AccessibilityNode])? {
         guard let finderPID = NSRunningApplication
             .runningApplications(withBundleIdentifier: AppConstants.finderBundleIdentifier)
             .first?.processIdentifier
         else { return nil }
 
-        var hit: AXUIElement?
-        let application = AXUIElementCreateApplication(finderPID)
-        guard AXUIElementCopyElementAtPosition(application, Float(point.x), Float(point.y), &hit) == .success,
-              var element = hit
-        else { return nil }
+        guard var element = topmostElement(at: point, finderPID: finderPID) else { return nil }
 
+        var path: [AccessibilityNode] = []
         for _ in 0...AppConstants.maxAccessibilityAncestors {
-            if let url = attribute(kAXURLAttribute, of: element) as? URL { return url }
+            if let url = attribute(kAXURLAttribute, of: element) as? URL {
+                return (url, path)
+            }
+            path.append(node(for: element))
             guard let parent = attribute(kAXParentAttribute, of: element),
                   CFGetTypeID(parent) == AXUIElementGetTypeID()
-            else { return nil }
+            else { return (nil, path) }
             element = parent as! AXUIElement
         }
-        return nil
+        return (nil, path)
+    }
+
+    private static func topmostElement(at point: CGPoint, finderPID: pid_t) -> AXUIElement? {
+        var hit: AXUIElement?
+        if AXUIElementCopyElementAtPosition(systemWide, Float(point.x), Float(point.y), &hit) == .success, let hit {
+            var pid: pid_t = 0
+            guard AXUIElementGetPid(hit, &pid) == .success, pid == finderPID else { return nil }
+            return hit
+        }
+        let application = AXUIElementCreateApplication(finderPID)
+        guard AXUIElementCopyElementAtPosition(application, Float(point.x), Float(point.y), &hit) == .success else { return nil }
+        return hit
+    }
+
+    private static func node(for element: AXUIElement) -> AccessibilityNode {
+        AccessibilityNode(
+            role: attribute(kAXRoleAttribute, of: element) as? String ?? "",
+            subrole: attribute(kAXSubroleAttribute, of: element) as? String ?? "",
+            identifier: attribute(kAXIdentifierAttribute, of: element) as? String ?? "")
     }
 
     private static func attribute(_ name: String, of element: AXUIElement) -> CFTypeRef? {

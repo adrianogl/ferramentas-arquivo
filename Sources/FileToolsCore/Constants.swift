@@ -89,6 +89,21 @@ public enum Constants {
         static let ocrLanguages = ["pt-BR", "en-US"]
     }
 
+    enum ClickTarget {
+        static let applicationRole = "AXApplication"
+        static let windowRole = "AXWindow"
+        static let scrollAreaRole = "AXScrollArea"
+        static let fileViewRoles: Set<String> = ["AXList", "AXOutline", "AXBrowser", "AXTable"]
+        static let fileViewIdentifiers: Set<String> = ["IconView", "ListView", "ColumnView", "GalleryView"]
+        static let blockedRoles: Set<String> = [
+            "AXMenuBar", "AXMenuBarItem", "AXMenu", "AXMenuItem", "AXMenuButton",
+            "AXButton", "AXToolbar", "AXPopUpButton", "AXRadioButton", "AXRadioGroup",
+            "AXCheckBox", "AXDisclosureTriangle", "AXTabGroup", "AXTextField", "AXTextArea",
+            "AXComboBox", "AXSearchField", "AXSplitter", "AXScrollBar", "AXValueIndicator",
+            "AXSlider", "AXIncrementor", "AXLink",
+        ]
+    }
+
     enum SettingsKey {
         static let limitMegabytes = "limitMegabytes"
         static let triggerModifier = "triggerModifier"
