@@ -13,7 +13,7 @@ O build precisa passar sem warnings e os testes sem falhas antes de abrir a PR. 
 - Identificadores em inglês. Texto visível ao usuário em pt-BR.
 - Sem comentários no código, salvo workaround não óbvio.
 - Constantes em `Constants.swift`. Um tipo público por arquivo.
-- `FileToolsCore` não depende de AppKit nem de SwiftUI; a interface fica em `FileToolsApp`.
+- `FileToolsCore` não tem interface: nada de SwiftUI nem de janelas. A lógica testável fica lá e a interface em `FileToolsApp`.
 - Nunca sobrescrever nem apagar o arquivo original.
 
 ## Commits e PRs

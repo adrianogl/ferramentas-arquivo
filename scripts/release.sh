@@ -7,6 +7,10 @@ if [[ $# -ne 1 ]]; then
 fi
 
 VERSION="$1"
+if [[ ! $VERSION =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+    echo "uso: $0 <versão>  (ex.: 0.1.0)" >&2
+    exit 64
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_NAME="Ferramentas de Arquivo.app"
 ZIP="$ROOT/build/Ferramentas-de-Arquivo-$VERSION.zip"

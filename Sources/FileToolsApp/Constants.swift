@@ -130,6 +130,7 @@ enum AppConstants {
     }
 
     enum MenuBar {
+        static let accessibilityTitle = "Ferramentas de Arquivo"
         static let iconResource = "MenuBarIcon"
         static let iconExtension = "pdf"
         static let fallbackSymbol = "doc.badge.gearshape"

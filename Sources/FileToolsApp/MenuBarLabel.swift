@@ -3,6 +3,11 @@ import SwiftUI
 
 struct MenuBarLabel: View {
     var body: some View {
+        icon.accessibilityLabel(AppConstants.MenuBar.accessibilityTitle)
+    }
+
+    @ViewBuilder
+    private var icon: some View {
         if let image = Self.templateImage {
             Image(nsImage: image)
         } else {
