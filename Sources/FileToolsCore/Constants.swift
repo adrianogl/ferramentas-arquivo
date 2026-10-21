@@ -6,6 +6,7 @@ public enum Constants {
     static let defaultLimitMegabytes = 1.0
     static let limitMegabytesRange = 0.1...100.0
     static let minimumPageNumberWidth = 2
+    static let normalWindowLayer = 0
     public static let imagePageLongSide: CGFloat = 842
     public static let jpgExportQuality = RasterQuality(dpi: 150, jpegQuality: 0.85)
     public static let rasterLadder = [
