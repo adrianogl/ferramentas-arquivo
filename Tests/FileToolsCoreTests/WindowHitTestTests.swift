@@ -25,7 +25,7 @@ import Testing
     }
 
     func hit(_ point: CGPoint, in windows: [WindowSnapshot]) -> WindowSnapshot? {
-        WindowHitTest.frontmostWindow(at: point, in: windows, excludingPID: ownPID, desktopIconLayer: desktopIconLayer)
+        WindowHitTest.frontmostWindow(at: point, in: windows, excludingPID: ownPID, desktopIconLayer: desktopIconLayer, screens: [screen])
     }
 
     @Test func overlayInFrontOfFinderWindowIsIgnored() {
@@ -38,6 +38,29 @@ import Testing
 
     @Test func desktopIconWindowCountsWhenNothingElseCovers() {
         #expect(hit(CGPoint(x: 4500, y: 1000), in: authorWindows)?.ownerPID == finderPID)
+    }
+
+    @Test func dockBlocksDesktopBehindIt() {
+        let windows = authorWindows + [window("Dock", pid: 6, layer: 20, bounds: CGRect(x: 1500, y: 1340, width: 2100, height: 100))]
+        let dockFirst = [windows.last!] + windows.dropLast()
+        #expect(hit(CGPoint(x: 2000, y: 1400), in: dockFirst)?.ownerName == "Dock")
+    }
+
+    @Test func menuBarStripBlocksFinderWindowBelowIt() {
+        let windows = [
+            window("Window Server", pid: 1, layer: 24, bounds: CGRect(x: 0, y: 0, width: 5120, height: 30)),
+            window("Finder", pid: finderPID, layer: 0, bounds: CGRect(x: 0, y: 0, width: 1200, height: 800)),
+        ]
+        #expect(hit(CGPoint(x: 500, y: 15), in: windows)?.ownerName == "Window Server")
+    }
+
+    @Test func desktopWidgetBlocksDesktopIcons() {
+        let windows = [
+            window("Central de Notificações", pid: 3, layer: -2_147_483_601, bounds: CGRect(x: 8, y: 38, width: 360, height: 180)),
+            window("Finder", pid: finderPID, layer: desktopIconLayer, bounds: screen),
+        ]
+        #expect(hit(CGPoint(x: 100, y: 100), in: windows)?.ownerPID == 3)
+        #expect(hit(CGPoint(x: 1000, y: 100), in: windows)?.ownerPID == finderPID)
     }
 
     @Test func transparentAndOwnWindowsAreSkipped() {

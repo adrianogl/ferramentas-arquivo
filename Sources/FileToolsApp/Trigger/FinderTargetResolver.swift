@@ -45,6 +45,7 @@ enum FinderTargetResolver {
     }
 
     private static func selectByClicking(at point: CGPoint, before: [URL]) async -> [URL]? {
+        guard FinderWindowLocator.isFinderUnder(point) else { return nil }
         postLeftClick(at: point)
         try? await Task.sleep(for: AppConstants.selectionSettleDelay)
         let after = FinderScripting.selection()

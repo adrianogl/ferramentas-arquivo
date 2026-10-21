@@ -7,6 +7,7 @@ enum AppConstants {
     static let tapRetryInterval: TimeInterval = 2
     static let selectionSettleDelay: Duration = .milliseconds(150)
     static let maxAccessibilityAncestors = 8
+    static let hitTestMessagingTimeout: Float = 0.15
     static let accessibilitySettingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
     static let automationSettingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation")!
 

@@ -5,13 +5,13 @@ public enum WindowHitTest {
         at point: CGPoint,
         in windows: [WindowSnapshot],
         excludingPID ownPID: Int32,
-        desktopIconLayer: Int
+        desktopIconLayer: Int,
+        screens: [CGRect]
     ) -> WindowSnapshot? {
         windows.first { window in
-            (window.layer == Constants.normalWindowLayer || window.layer == desktopIconLayer)
-                && window.alpha > 0
-                && window.ownerPID != ownPID
-                && window.bounds.contains(point)
+            guard window.alpha > 0, window.ownerPID != ownPID, window.bounds.contains(point) else { return false }
+            if window.layer == Constants.normalWindowLayer || window.layer == desktopIconLayer { return true }
+            return !screens.contains { window.bounds.contains($0) }
         }
     }
 }
