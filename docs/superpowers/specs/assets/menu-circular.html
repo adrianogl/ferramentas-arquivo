@@ -1,0 +1,109 @@
+<style>
+  .mac { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; margin: 16px 0; }
+  .bg { position: relative; height: 340px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,0,0,.1);
+        background: radial-gradient(circle at 20% 25%, #b9d3ff 0%, transparent 55%), radial-gradient(circle at 85% 80%, #ffd2bf 0%, transparent 55%), linear-gradient(135deg, #dfe6f5, #efe3f3); }
+  .bg.dark { background: radial-gradient(circle at 15% 20%, #3b4f8f 0%, transparent 55%), radial-gradient(circle at 90% 85%, #7a3f5c 0%, transparent 55%), linear-gradient(135deg, #15182a, #2a1f36); }
+  .mini { position: absolute; left: 14px; top: 14px; right: 14px; height: 64px; border-radius: 8px; display: flex; gap: 14px; padding: 10px 14px; font-size: 10px; background: rgba(246,246,248,.9); color: #1d1d1f; box-shadow: 0 8px 20px rgba(0,0,0,.12); }
+  .dark .mini { background: rgba(40,40,44,.9); color: #f5f5f7; }
+  .mini .f { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .mini .ic { width: 24px; height: 30px; background: #fff; border: 1px solid #d2d2d7; border-radius: 3px; position: relative; }
+  .mini .ic::after { content: "PDF"; position: absolute; bottom: 3px; left: 3px; right: 3px; background: #e5484d; color: #fff; font-size: 6px; font-weight: 700; text-align: center; border-radius: 1px; }
+  .mini .ic.img::after { content: "HEIC"; background: #3e8ed0; }
+  .mini .s span { background: #0a63d6; color: #fff; padding: 0 4px; border-radius: 3px; }
+
+  .r { position: absolute; left: 50%; top: 205px; width: 220px; height: 220px; transform: translate(-50%,-50%); --ac: #ff5a5f; }
+  .r .glass { position: absolute; inset: 0; border-radius: 50%;
+              background: rgba(255,255,255,.48); backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
+              border: 1px solid rgba(255,255,255,.9);
+              box-shadow: 0 22px 54px rgba(40,40,90,.24), inset 0 2px 6px rgba(255,255,255,.9), inset 0 -12px 30px rgba(120,120,200,.12); }
+  .dark .r .glass { background: rgba(30,30,36,.5); border-color: rgba(255,255,255,.16); box-shadow: 0 22px 54px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14); }
+  .r .track { position: absolute; inset: 0; border-radius: 50%;
+              background: conic-gradient(from -45deg, var(--ac) 0 90deg, transparent 90deg);
+              -webkit-mask: radial-gradient(circle, transparent 101px, #000 102px, #000 108px, transparent 109px);
+              mask: radial-gradient(circle, transparent 101px, #000 102px, #000 108px, transparent 109px);
+              filter: drop-shadow(0 0 7px var(--ac)); }
+  .r .wedge { position: absolute; inset: 0; border-radius: 50%;
+              background: conic-gradient(from -45deg, color-mix(in srgb, var(--ac) 16%, transparent) 0 90deg, transparent 90deg);
+              -webkit-mask: radial-gradient(circle, transparent 59px, #000 60px); mask: radial-gradient(circle, transparent 59px, #000 60px); }
+  .r .core { position: absolute; inset: 60px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+             background: rgba(255,255,255,.78); box-shadow: 0 4px 14px rgba(0,0,0,.08); color: #1d1d1f; font-size: 11.5px; font-weight: 600; text-align: center; z-index: 1; }
+  .dark .r .core { background: rgba(255,255,255,.08); color: #f5f5f7; box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+  .r .core small { font-weight: 400; opacity: .62; font-size: 9.5px; margin-top: 2px; }
+  .r .core .bar { width: 54px; height: 3px; border-radius: 2px; background: rgba(0,0,0,.08); margin-top: 6px; overflow: hidden; }
+  .dark .r .core .bar { background: rgba(255,255,255,.12); }
+  .r .core .bar i { display: block; width: 26%; height: 100%; background: var(--ac); }
+  .o { position: absolute; transform: translate(-50%,-50%); text-align: center; font-size: 10px; font-weight: 500; line-height: 1.15; color: #1d1d1f; white-space: nowrap; }
+  .dark .o { color: #f5f5f7; }
+  .o .i { width: 32px; height: 32px; margin: 0 auto 3px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px;
+          color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); border: 1px solid color-mix(in srgb, var(--c) 30%, transparent); }
+  .o.on .i { background: var(--c); color: #fff; border-color: transparent; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 20%, transparent), 0 6px 16px color-mix(in srgb, var(--c) 55%, transparent); }
+  .o.on { color: var(--c); font-weight: 600; }
+  .o.off { opacity: .3; }
+  .o.empty .i { --c: #8e8e93; border-style: dashed; background: transparent; }
+  .o.empty { opacity: .5; }
+  .cap { font-size: 13px; color: var(--text-secondary, #6e6e73); margin-top: 8px; line-height: 1.5; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; margin-top: 4px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: 6px; vertical-align: -1px; }
+</style>
+
+<div class="mac">
+<h2>C + D: vidro claro com cor por ação</h2>
+<p class="subtitle">Base de vidro do macOS (C), com cor própria em cada ação e o anel fino brilhando na fatia ativa (D). Acompanha o modo claro e o escuro do sistema.</p>
+
+<div class="grid">
+  <div>
+    <div class="bg">
+      <div class="mini"><div class="f s"><div class="ic"></div><span>nota-uber.pdf</span></div><div class="f"><div class="ic"></div>hotel.pdf</div></div>
+      <div class="r" style="--ac:#ff5a5f">
+        <div class="glass"></div><div class="wedge"></div><div class="track"></div>
+        <div class="core">Otimizar PDF<small>3,4 MB → até 1 MB</small></div>
+        <div class="o on" style="--c:#ff5a5f;left:50%;top:15%"><div class="i">⇣</div>Otimizar</div>
+        <div class="o off" style="--c:#2f8cff;left:85%;top:50%"><div class="i">⊕</div>Juntar</div>
+        <div class="o off" style="--c:#2fbf71;left:50%;top:85%"><div class="i">▣</div>Imagens</div>
+        <div class="o empty" style="left:15%;top:50%"><div class="i">＋</div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Modo claro</b>, um PDF, cursor em Otimizar.</p>
+  </div>
+
+  <div>
+    <div class="bg dark">
+      <div class="mini"><div class="f s"><div class="ic"></div><span>nota-uber.pdf</span></div><div class="f s"><div class="ic"></div><span>hotel.pdf</span></div></div>
+      <div class="r" style="--ac:#2f8cff">
+        <div class="glass"></div>
+        <div class="wedge" style="background: conic-gradient(from 45deg, color-mix(in srgb, #2f8cff 18%, transparent) 0 90deg, transparent 90deg)"></div>
+        <div class="track" style="background: conic-gradient(from 45deg, #2f8cff 0 90deg, transparent 90deg)"></div>
+        <div class="core">Juntar PDFs<small>2 arquivos · 5,8 MB</small><small>1 PDF até 1 MB</small></div>
+        <div class="o" style="--c:#ff5a5f;left:50%;top:15%"><div class="i">⇣</div>Otimizar</div>
+        <div class="o on" style="--c:#2f8cff;left:85%;top:50%"><div class="i">⊕</div>Juntar</div>
+        <div class="o off" style="--c:#2fbf71;left:50%;top:85%"><div class="i">▣</div>Imagens</div>
+        <div class="o empty" style="left:15%;top:50%"><div class="i">＋</div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Modo escuro</b>, dois PDFs, cursor em Juntar.</p>
+  </div>
+
+  <div>
+    <div class="bg">
+      <div class="mini"><div class="f s"><div class="ic"></div><span>nota-uber.pdf</span></div></div>
+      <div class="r" style="--ac:#ff5a5f">
+        <div class="glass"></div><div class="wedge"></div><div class="track"></div>
+        <div class="core">Otimizando…<small>nota-uber.pdf</small><div class="bar"><i></i></div></div>
+        <div class="o on" style="--c:#ff5a5f;left:50%;top:15%"><div class="i">⇣</div>Otimizar</div>
+        <div class="o off" style="--c:#2f8cff;left:85%;top:50%"><div class="i">⊕</div>Juntar</div>
+        <div class="o off" style="--c:#2fbf71;left:50%;top:85%"><div class="i">▣</div>Imagens</div>
+        <div class="o empty" style="left:15%;top:50%"><div class="i">＋</div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Depois do clique</b>: o centro mostra o progresso por um instante, o círculo some e chega a notificação.</p>
+  </div>
+</div>
+
+<div class="legend">
+  <span style="--c:#ff5a5f">Otimizar · vermelho</span>
+  <span style="--c:#2f8cff">Juntar · azul</span>
+  <span style="--c:#2fbf71">Imagens para PDF · verde</span>
+  <span style="--c:#8e8e93">vaga para a próxima ação</span>
+</div>
+</div>
