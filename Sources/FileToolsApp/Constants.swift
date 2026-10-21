@@ -63,6 +63,32 @@ enum AppConstants {
         static let escapeKeyCode: UInt16 = 53
     }
 
+    enum Split {
+        static let width: CGFloat = 380
+        static let textSize: CGFloat = 13
+        static let captionSize: CGFloat = 12
+        static let horizontalPadding: CGFloat = 22
+        static let topPadding: CGFloat = 18
+        static let footerTopPadding: CGFloat = 14
+        static let bottomPadding: CGFloat = 18
+        static let rowSpacing: CGFloat = 14
+        static let captionSpacing: CGFloat = 2
+        static let fieldSpacing: CGFloat = 6
+        static let fieldWidth: CGFloat = 140
+        static let fieldCornerRadius: CGFloat = 5
+        static let buttonSpacing: CGFloat = 8
+        static let radioSize: CGFloat = 16
+        static let radioSpacing: CGFloat = 10
+        static let radioTopInset: CGFloat = 1
+        static let radioOnBorder: CGFloat = 5
+        static let accent: UInt32 = 0x0A63D6
+        static let radioBorder: UInt32 = 0xA1A1A6
+        static let errorBorder: UInt32 = 0xFF3B30
+        static let errorText: UInt32 = 0xD70015
+        static let errorGlowOpacity = 0.15
+        static let errorGlowRadius: CGFloat = 3
+    }
+
     enum Brand {
         static let navy: UInt32 = 0x0B1B33
         static let blue: UInt32 = 0x2F8CFF

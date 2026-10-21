@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) lazy var coordinator = ActionCoordinator(settings: settings, notifier: notifier)
     private lazy var serviceProvider = ServiceProvider(coordinator: coordinator)
     private lazy var radial = RadialPanelController(coordinator: coordinator, settings: settings)
+    private lazy var split = SplitDialogController(coordinator: coordinator)
     private var tap: RightClickTap?
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
@@ -23,6 +24,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Log.app.info("app iniciado")
         notifier.requestAuthorization()
         NSApp.servicesProvider = serviceProvider
+        coordinator.presentSplit = { [weak self] url, pageCount, point in
+            self?.split.present(for: url, pageCount: pageCount, near: point)
+        }
         NSUpdateDynamicServices()
         tap = RightClickTap(
             modifier: { [settings] in settings.triggerModifier },
