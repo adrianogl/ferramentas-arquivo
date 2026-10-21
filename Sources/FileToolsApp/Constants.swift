@@ -17,6 +17,7 @@ enum AppConstants {
         static let limitStep = 0.1
         static let limitFieldWidth: CGFloat = 64
         static let windowTitle = "Ferramentas de Arquivo"
+        static let windowID = "settings"
         static let grantedColorHex = "#34c759"
         static let missingColorHex = "#ff9f0a"
         static let actionSymbolWidth: CGFloat = 22

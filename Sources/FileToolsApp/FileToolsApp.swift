@@ -9,9 +9,9 @@ struct FileToolsApp: App {
         MenuBarExtra {
             MenuBarContent(appDelegate: appDelegate)
         } label: {
-            MenuBarLabel()
+            MenuBarLabel(appDelegate: appDelegate)
         }
-        Window(AppConstants.Settings.windowTitle, id: "settings") {
+        Window(AppConstants.Settings.windowTitle, id: AppConstants.Settings.windowID) {
             SettingsView(model: appDelegate.settingsModel)
         }
         .windowResizability(.contentSize)
@@ -21,12 +21,10 @@ struct FileToolsApp: App {
 
 private struct MenuBarContent: View {
     let appDelegate: AppDelegate
-    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Button("Configurações…") {
-            NSApp.activate()
-            openWindow(id: "settings")
+            appDelegate.showSettings()
         }
         Button("Configurar permissões…") {
             appDelegate.showOnboarding()

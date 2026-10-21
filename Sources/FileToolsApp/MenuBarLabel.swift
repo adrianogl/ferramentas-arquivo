@@ -2,8 +2,17 @@ import AppKit
 import SwiftUI
 
 struct MenuBarLabel: View {
+    let appDelegate: AppDelegate
+    @Environment(\.openWindow) private var openWindow
+
     var body: some View {
-        icon.accessibilityLabel(AppConstants.MenuBar.accessibilityTitle)
+        icon
+            .accessibilityLabel(AppConstants.MenuBar.accessibilityTitle)
+            .onAppear {
+                appDelegate.openSettingsWindow = { [openWindow] in
+                    openWindow(id: AppConstants.Settings.windowID)
+                }
+            }
     }
 
     @ViewBuilder

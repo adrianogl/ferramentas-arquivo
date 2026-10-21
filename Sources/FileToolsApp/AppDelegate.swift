@@ -15,6 +15,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
     private var hasPromptedForAccessibility = false
+    private var isSettingsPending = false
+    var openSettingsWindow: (() -> Void)? {
+        didSet {
+            guard isSettingsPending, openSettingsWindow != nil else { return }
+            isSettingsPending = false
+            showSettings()
+        }
+    }
     private lazy var onboarding: OnboardingWindowController = {
         let controller = OnboardingWindowController(settings: settings)
         controller.onAccessibilityGranted = { [weak self] in self?.startTap() }
@@ -23,7 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Log.app.info("app iniciado")
+        let launchedAsLoginItem = Self.launchedAsLoginItem()
+        Log.app.info("app iniciado\(launchedAsLoginItem ? " no login" : "", privacy: .public)")
         notifier.requestAuthorization()
         NSApp.servicesProvider = serviceProvider
         coordinator.presentSplit = { [weak self] url, pageCount, point in
@@ -44,10 +53,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 finder: finder,
                 completed: settings.onboardingCompleted)
             startTap()
-            guard let step else { return }
+            guard let step else {
+                if !launchedAsLoginItem { showSettings() }
+                return
+            }
             Log.app.info("abrindo assistente no passo \(String(describing: step), privacy: .public)")
             onboarding.show(at: step)
         }
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        Log.app.info("app reaberto")
+        showSettings()
+        return false
+    }
+
+    func showSettings() {
+        guard let openSettingsWindow else {
+            isSettingsPending = true
+            return
+        }
+        NSApp.activate()
+        openSettingsWindow()
+    }
+
+    private static func launchedAsLoginItem() -> Bool {
+        guard let event = NSAppleEventManager.shared().currentAppleEvent,
+              event.eventID == kAEOpenApplication
+        else { return false }
+        return event.paramDescriptor(forKeyword: keyAEPropData)?.enumCodeValue == keyAELaunchedAsLogInItem
     }
 
     private func presentOrganize(_ url: URL) {
