@@ -7,6 +7,17 @@ APP="$ROOT/build/$APP_NAME"
 INSTALLED="/Applications/$APP_NAME"
 BUNDLE_ID="dev.aglv.FerramentasArquivo"
 
+INSTALL=false
+ADHOC=false
+for arg in "$@"; do
+    case "$arg" in
+        --install) INSTALL=true ;;
+        --adhoc) ADHOC=true ;;
+        *) echo "uso: $0 [--install] [--adhoc]" >&2; exit 64 ;;
+    esac
+done
+INFO_PLIST="${INFO_PLIST:-$ROOT/Resources/Info.plist}"
+
 cd "$ROOT"
 swift build -c release --product FileToolsApp
 BIN_DIR="$(swift build -c release --product FileToolsApp --show-bin-path)"
@@ -14,11 +25,14 @@ BIN_DIR="$(swift build -c release --product FileToolsApp --show-bin-path)"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN_DIR/FileToolsApp" "$APP/Contents/MacOS/FileTools"
-cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
+cp "$INFO_PLIST" "$APP/Contents/Info.plist"
 cp "$ROOT/Resources/AppIcon.icns" "$ROOT/Resources/MenuBarIcon.pdf" "$APP/Contents/Resources/"
 
-IDENTITY="${SIGN_IDENTITY:-}"
-if [[ -z "$IDENTITY" ]]; then
+IDENTITY=""
+if [[ "$ADHOC" == false ]]; then
+    IDENTITY="${SIGN_IDENTITY:-}"
+fi
+if [[ -z "$IDENTITY" && "$ADHOC" == false ]]; then
     IDENTITY="$(security find-identity -v -p codesigning | grep -m1 '"Apple Development' | sed -E 's/.*"(.*)"/\1/' || true)"
 fi
 if [[ -z "$IDENTITY" ]]; then
@@ -28,7 +42,7 @@ fi
 codesign --force --sign "$IDENTITY" "$APP"
 echo "app em $APP (assinado com $IDENTITY)"
 
-if [[ "${1:-}" == "--install" ]]; then
+if [[ "$INSTALL" == true ]]; then
     osascript -e "quit app id \"$BUNDLE_ID\"" || true
     rm -rf "$INSTALLED"
     cp -R "$APP" "$INSTALLED"
