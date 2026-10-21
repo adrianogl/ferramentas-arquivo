@@ -4,6 +4,9 @@ import FileToolsCore
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let settings = SettingsStore()
+    let notifier = Notifier()
+    private(set) lazy var coordinator = ActionCoordinator(settings: settings, notifier: notifier)
+    private lazy var serviceProvider = ServiceProvider(coordinator: coordinator)
     private var tap: RightClickTap?
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
@@ -17,6 +20,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Log.app.info("app iniciado")
+        notifier.requestAuthorization()
+        NSApp.servicesProvider = serviceProvider
+        NSUpdateDynamicServices()
         tap = RightClickTap(
             modifier: { [settings] in settings.triggerModifier },
             onTrigger: { [weak self] point in self?.handleTrigger(at: point) }
