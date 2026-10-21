@@ -104,10 +104,13 @@ final class OnboardingModel {
         }
     }
 
-    func registerTryIt(_ targets: [URL]) {
-        guard step == .tryIt, !triedIt, SamplePDF.matches(targets) else { return }
-        triedIt = true
-        Log.app.info("passo Experimente concluído")
+    func registerTryIt(_ targets: [URL]) -> Bool {
+        guard step == .tryIt, SamplePDF.matches(targets) else { return false }
+        if !triedIt {
+            triedIt = true
+            Log.app.info("passo Experimente concluído")
+        }
+        return true
     }
 
     private func go(to step: OnboardingStep) {

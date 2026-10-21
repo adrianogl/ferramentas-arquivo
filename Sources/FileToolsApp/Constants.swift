@@ -22,6 +22,34 @@ enum AppConstants {
         static let sampleTextInset: CGFloat = 60
     }
 
+    enum Radial {
+        static let panelSize: CGFloat = 300
+        static let coreDiameter: CGFloat = 124
+        static let iconSize: CGFloat = 30
+        static let iconCornerRadius: CGFloat = 9
+        static let iconSymbolSize: CGFloat = 14
+        static let labelSize: CGFloat = 9.5
+        static let titleSize: CGFloat = 12
+        static let detailSize: CGFloat = 10
+        static let detailOpacity = 0.62
+        static let separatorOpacity = 0.12
+        static let sliceFillOpacity = 0.16
+        static let glowRadius: CGFloat = 6
+        static let iconFillOpacity = 0.13
+        static let iconBorderOpacity = 0.30
+        static let iconRingOpacity = 0.20
+        static let iconRingWidth: CGFloat = 4
+        static let unavailableOpacity = 0.3
+        static let vacancyOpacity = 0.5
+        static let reasonColorHex = "#ff5a5f"
+        static let hiddenScale: CGFloat = 0.85
+        static let hiddenBlur: CGFloat = 6
+        static let openDuration: TimeInterval = 0.16
+        static let closeDuration: TimeInterval = 0.12
+        static let minimumProgress: Duration = .milliseconds(400)
+        static let escapeKeyCode: UInt16 = 53
+    }
+
     enum Brand {
         static let navy: UInt32 = 0x0B1B33
         static let blue: UInt32 = 0x2F8CFF

@@ -4,7 +4,7 @@ import SwiftUI
 
 @MainActor
 final class OnboardingWindowController: NSObject, NSWindowDelegate {
-    var onTryItTarget: (([URL]) -> Void)?
+    var onTryItTarget: (([URL]) -> Bool)?
     var onAccessibilityGranted: (() -> Void)? {
         get { model.onAccessibilityGranted }
         set { model.onAccessibilityGranted = newValue }
@@ -20,7 +20,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     init(settings: SettingsStore) {
         model = OnboardingModel(settings: settings)
         super.init()
-        onTryItTarget = { [weak model] targets in model?.registerTryIt(targets) }
+        onTryItTarget = { [weak model] targets in model?.registerTryIt(targets) ?? false }
         model.commitEdits = { [weak self] in _ = self?.window?.makeFirstResponder(nil) }
         model.onFinish = { [weak self] in self?.window?.close() }
     }

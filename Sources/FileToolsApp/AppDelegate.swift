@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let notifier = Notifier()
     private(set) lazy var coordinator = ActionCoordinator(settings: settings, notifier: notifier)
     private lazy var serviceProvider = ServiceProvider(coordinator: coordinator)
+    private lazy var radial = RadialPanelController(coordinator: coordinator, settings: settings)
     private var tap: RightClickTap?
     private var tapRetryTimer: Timer?
     private var hasLoggedTapFailure = false
@@ -84,7 +85,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if let targets = await FinderTargetResolver.resolve(at: point) {
                 let paths = targets.map(\.path).joined(separator: ", ")
                 Log.trigger.info("alvo: \(paths, privacy: .public)")
-                onboarding.onTryItTarget?(targets)
+                if onboarding.onTryItTarget?(targets) == true { return }
+                radial.show(targets: targets, at: point)
             } else {
                 tap?.passThrough(at: point, flags: settings.triggerModifier.cgFlag)
             }

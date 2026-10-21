@@ -17,6 +17,13 @@ public enum Constants {
         RasterQuality(dpi: 100, jpegQuality: 0.45),
     ]
 
+    public static let radialDiameter: CGFloat = 260
+    public static let radialCoreRadius: CGFloat = 62
+    public static let radialRingInner: CGFloat = 122
+    public static let radialRingOuter: CGFloat = 128
+    public static let radialIconRadius: CGFloat = 96
+    public static let radialSlotCount = 8
+
     public static let vacancySymbol = "plus"
     public static let vacancyColorHex = "#8e8e93"
 
@@ -55,6 +62,14 @@ public enum Constants {
         static let selectOnePDF = "selecione 1 PDF"
         static let singlePage = "o PDF tem só 1 página"
         static let imagesOnly = "só para imagens"
+    }
+
+    enum CoreText {
+        static let chooseAction = "escolha uma ação"
+        static let opensOptions = "abre as opções"
+        static let opensEditor = "abre o editor"
+        static let jpgPerPage = "um JPG por página"
+        static let markdownPerPDF = "um .md por PDF"
     }
 
     enum Suffix {
