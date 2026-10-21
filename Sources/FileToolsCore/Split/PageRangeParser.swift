@@ -7,7 +7,7 @@ public enum PageRangeParser {
             let bounds = part.split(separator: "-", omittingEmptySubsequences: false).map(number)
             guard (1...2).contains(bounds.count), !bounds.contains(nil) else { return .failure(.invalidSyntax) }
             let numbers = bounds.compactMap { $0 }
-            if let outside = numbers.first(where: { !(1...pageCount).contains($0) }) {
+            if let outside = numbers.first(where: { $0 < 1 || $0 > pageCount }) {
                 return .failure(.pageOutOfRange(page: outside, pageCount: pageCount))
             }
             let first = numbers[0]

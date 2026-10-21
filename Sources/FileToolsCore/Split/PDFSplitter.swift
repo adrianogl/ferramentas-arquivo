@@ -49,7 +49,7 @@ public enum PDFSplitter {
     private static func extract(
         _ pages: [Int], from document: PDFDocument, source: URL, originalBytes: Int
     ) throws(ActionFailure) -> ActionReport.Output {
-        guard !pages.isEmpty, pages.allSatisfy({ (1...document.pageCount).contains($0) }) else {
+        guard !pages.isEmpty, pages.allSatisfy({ $0 >= 1 && $0 <= document.pageCount }) else {
             throw .unreadable
         }
         let data = try assemble(pages.map { $0 - 1 }, from: document)

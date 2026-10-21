@@ -64,4 +64,16 @@ import Testing
         #expect(r.failures == [ActionReport.Failure(url: pdf, reason: .unreadable)])
         #expect(try FileManager.default.contentsOfDirectory(atPath: d.path) == ["nota.pdf"])
     }
+
+    @Test func zeroPagePDFFails() throws {
+        let d = try Fixtures.tempDirectory()
+        defer { try? FileManager.default.removeItem(at: d) }
+        let pdf = try Fixtures.write(Fixtures.zeroPagePDF(), named: "vazio.pdf", in: d)
+        for mode in [SplitMode.extract([1]), .allPages] {
+            let r = PDFSplitter.split(pdf, mode: mode)
+            #expect(r.outputs.isEmpty)
+            #expect(r.failures == [ActionReport.Failure(url: pdf, reason: .unreadable)])
+        }
+        #expect(try FileManager.default.contentsOfDirectory(atPath: d.path) == ["vazio.pdf"])
+    }
 }

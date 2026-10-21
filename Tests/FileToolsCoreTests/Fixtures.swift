@@ -99,6 +99,10 @@ enum Fixtures {
         }
     }
 
+    static func zeroPagePDF() -> Data {
+        Data("%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n".utf8)
+    }
+
     static func scannedTextPDF(_ text: String) -> Data {
         pdf(pageCount: 1) { ctx, _ in
             drawTextBitmap(text, in: ctx)

@@ -17,6 +17,11 @@ import Testing
         #expect(PageRangeError.invalidSyntax.message == "Use números e intervalos, como 1-3, 5")
     }
 
+    @Test func zeroPageDocumentRejectsEveryPage() {
+        #expect(PageRangeParser.parse("1", pageCount: 0) == .failure(.pageOutOfRange(page: 1, pageCount: 0)))
+        #expect(PageRangeParser.parse("1-2", pageCount: 0) == .failure(.pageOutOfRange(page: 1, pageCount: 0)))
+    }
+
     @Test func rejectsMalformedParts() {
         #expect(PageRangeParser.parse("1,,2", pageCount: 8) == .failure(.invalidSyntax))
         #expect(PageRangeParser.parse("1-2-3", pageCount: 8) == .failure(.invalidSyntax))
