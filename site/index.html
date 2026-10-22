@@ -83,7 +83,11 @@ h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.04; letter-s
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 .fine { font-size: 13px; color: var(--muted); }
 .hero-art { flex: 1 1 340px; min-width: 0; display: flex; justify-content: center; }
-.hero-art img { width: 420px; max-width: 100%; aspect-ratio: 1 / 1; clip-path: circle(43.5% at 50% 50%); filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.35)); }
+.radial { width: 420px; max-width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.4)); font-family: "DM Sans", system-ui, sans-serif; }
+.radial .label { font-size: 10px; font-weight: 500; fill: #1d1d1f; text-anchor: middle; }
+.radial .off { opacity: 0.3; }
+.radial .tile { stroke-width: 1; }
+.radial .glyph { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 section { padding-top: 96px; padding-bottom: 32px; }
 h2 { margin: 0; font-size: clamp(2rem, 3.5vw, 2.75rem); letter-spacing: -0.03em; line-height: 1.1; }
@@ -149,7 +153,65 @@ footer a { color: var(--ink-2); }
       <div class="fine">Gratuito e open source · macOS 26 ou mais recente · Apple Silicon e Intel</div>
     </div>
     <div class="hero-art">
-      <img src="assets/menu-circular.png" width="300" height="300" alt="Menu circular do app aberto sobre um PDF, com a fatia Otimizar PDF destacada e o centro mostrando nota-uber.pdf, 3,4 MB, até 1 MB">
+      <svg class="radial" viewBox="0 0 300 300" width="420" height="420" role="img" aria-label="Menu circular do app aberto sobre um PDF, com a fatia Otimizar PDF destacada e o centro mostrando nota-uber.pdf, 3,4 MB, até 1 MB">
+        <circle cx="150" cy="150" r="132" fill="#F3F5F9" fill-opacity="0.94" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="1.5"/>
+        <g stroke="#0B1B33" stroke-opacity="0.1" stroke-width="1">
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(22.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(67.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(112.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(157.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(202.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(247.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(292.5 150 150)"/>
+          <line x1="150" y1="88" x2="150" y2="20" transform="rotate(337.5 150 150)"/>
+        </g>
+        <path d="M101.02 31.74 A128 128 0 0 1 198.98 31.74 L173.73 92.72 A62 62 0 0 0 126.27 92.72 Z" fill="#ff5a5f" fill-opacity="0.16"/>
+        <path d="M102.16 34.52 A125 125 0 0 1 197.84 34.52" fill="none" stroke="#ff5a5f" stroke-width="6" stroke-linecap="round" style="filter: drop-shadow(0 0 5px #ff5a5f)"/>
+        <circle cx="150" cy="150" r="62" fill="#FFFFFF" style="filter: drop-shadow(0 4px 10px rgba(11,27,51,0.12))"/>
+        <text x="150" y="141" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">Otimizar PDF</text>
+        <text x="150" y="158" text-anchor="middle" font-size="10.5" fill="#6e6e73">nota-uber.pdf · 3,4 MB</text>
+        <text x="150" y="173" text-anchor="middle" font-size="10.5" fill="#6e6e73">até 1 MB</text>
+
+        <g transform="translate(150 60)">
+          <rect x="-15" y="-24" width="30" height="30" rx="9" fill="#ff5a5f"/>
+          <g class="glyph" stroke="#FFFFFF" transform="translate(0 -9)"><path d="M-4 -7 h5 l4 4 v10 h-9 z"/><path d="M0 -1 v5 M-2.5 1.5 L0 4 L2.5 1.5"/></g>
+          <text class="label" y="19" fill="#ff5a5f" style="fill:#ff5a5f;font-weight:700">Otimizar</text>
+        </g>
+        <g class="off" transform="translate(217.9 88.1)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#2f8cff" fill-opacity="0.13" stroke="#2f8cff" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#2f8cff" transform="translate(0 -9)"><rect x="-6" y="-6" width="8" height="10" rx="1.5"/><rect x="-2" y="-3" width="8" height="10" rx="1.5"/></g>
+          <text class="label" y="19">Juntar</text>
+        </g>
+        <g transform="translate(244 156)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#ff9f0a" fill-opacity="0.13" stroke="#ff9f0a" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#ff9f0a" transform="translate(0 -9)"><circle cx="-4" cy="4" r="2.2"/><circle cx="4" cy="4" r="2.2"/><path d="M-2.6 2.4 L4 -7 M2.6 2.4 L-4 -7"/></g>
+          <text class="label" y="19">Dividir</text>
+        </g>
+        <g transform="translate(217.9 223.9)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#a970ff" fill-opacity="0.13" stroke="#a970ff" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#a970ff" transform="translate(0 -9)"><rect x="-6" y="-6" width="5" height="5" rx="1"/><rect x="1" y="-6" width="5" height="5" rx="1"/><rect x="-6" y="1" width="5" height="5" rx="1"/><rect x="1" y="1" width="5" height="5" rx="1"/></g>
+          <text class="label" y="19">Organizar</text>
+        </g>
+        <g class="off" transform="translate(150 252)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#2fbf71" fill-opacity="0.13" stroke="#2fbf71" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#2fbf71" transform="translate(0 -9)"><rect x="-7" y="-5" width="14" height="10" rx="1.5"/><path d="M-6 4 L-2 0 L1 3 L3 1 L6 4"/></g>
+          <text class="label" y="19">Imagens→PDF</text>
+        </g>
+        <g transform="translate(82.1 223.9)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#e0a800" fill-opacity="0.13" stroke="#e0a800" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#e0a800" transform="translate(0 -9)"><rect x="-6" y="-6" width="12" height="12" rx="2"/><path d="M-5 5 L-1 1 L2 4 L4 2 L6 4"/><circle cx="2.5" cy="-2.5" r="1.2"/></g>
+          <text class="label" y="19">PDF→JPG</text>
+        </g>
+        <g transform="translate(56 156)">
+          <rect class="tile" x="-15" y="-24" width="30" height="30" rx="9" fill="#22b8b0" fill-opacity="0.13" stroke="#22b8b0" stroke-opacity="0.3"/>
+          <g class="glyph" stroke="#22b8b0" transform="translate(0 -9)"><rect x="-5" y="-7" width="10" height="14" rx="1.5"/><path d="M-2.5 -3 h5 M-2.5 0 h5 M-2.5 3 h3"/></g>
+          <text class="label" y="19">Markdown</text>
+        </g>
+        <g opacity="0.5" transform="translate(82.1 88.1)">
+          <rect x="-15" y="-24" width="30" height="30" rx="9" fill="none" stroke="#8e8e93" stroke-width="1" stroke-dasharray="3 2"/>
+          <path class="glyph" stroke="#8e8e93" d="M0 -14 v10 M-5 -9 h10"/>
+        </g>
+      </svg>
     </div>
   </div>
 </header>
