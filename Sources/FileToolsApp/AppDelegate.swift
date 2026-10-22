@@ -31,8 +31,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let launchedAsLoginItem = Self.launchedAsLoginItem()
-        Log.app.info("app iniciado\(launchedAsLoginItem ? " no login" : "", privacy: .public)")
+        let launchIsDefault = notification.userInfo?[NSApplication.launchIsDefaultUserInfoKey] as? Bool
+        let launchedAsLoginItem = LaunchPolicy.isLoginLaunch(
+            hasLoginItemFlag: Self.hasLoginItemFlag(),
+            launchAtLoginEnabled: LaunchAtLogin.isEnabled,
+            secondsSinceSessionStart: SessionClock.secondsSinceSessionStart())
+        let launchDescription = launchedAsLoginItem ? "login" : launchIsDefault == false ? "serviço ou arquivo" : "usuário"
+        Log.app.info("app iniciado (\(launchDescription, privacy: .public))")
         notifier.requestAuthorization()
         NSApp.servicesProvider = serviceProvider
         coordinator.presentSplit = { [weak self] url, pageCount, point in
@@ -54,7 +59,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 completed: settings.onboardingCompleted)
             startTap()
             guard let step else {
-                if !launchedAsLoginItem { showSettings() }
+                let shouldShow = LaunchPolicy.shouldShowSettings(
+                    launchIsDefault: launchIsDefault,
+                    isLoginLaunch: launchedAsLoginItem,
+                    onboardingCompleted: settings.onboardingCompleted)
+                if shouldShow { showSettings() }
                 return
             }
             Log.app.info("abrindo assistente no passo \(String(describing: step), privacy: .public)")
@@ -77,7 +86,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         openSettingsWindow()
     }
 
-    private static func launchedAsLoginItem() -> Bool {
+    private static func hasLoginItemFlag() -> Bool {
         guard let event = NSAppleEventManager.shared().currentAppleEvent,
               event.eventID == kAEOpenApplication
         else { return false }

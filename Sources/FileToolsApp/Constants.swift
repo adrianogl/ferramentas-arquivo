@@ -1,6 +1,7 @@
 import Foundation
 
 enum AppConstants {
+    static let loginWindowBundleIdentifier = "com.apple.loginwindow"
     static let accessibilityTrustPromptKey = "AXTrustedCheckOptionPrompt"
     static let finderBundleIdentifier = "com.apple.finder"
     static let syntheticEventMarker: Int64 = 0x4654_4150

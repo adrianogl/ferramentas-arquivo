@@ -2,6 +2,7 @@ import CoreGraphics
 import Foundation
 
 public enum Constants {
+    static let loginLaunchWindow: TimeInterval = 120
     static let bytesPerMegabyte = 1_000_000.0
     static let defaultLimitMegabytes = 1.0
     static let limitMegabytesRange = 0.1...100.0
