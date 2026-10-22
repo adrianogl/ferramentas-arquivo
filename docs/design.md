@@ -32,7 +32,7 @@ Este é o jeito principal de usar o app, pedido pelo autor.
 - **Gatilho:** ⌥ Option + clique direito sobre um arquivo (ou uma seleção) no Finder, inclusive na Mesa. O menu de contexto do Finder **não** aparece nesse caso. Sem a tecla, o clique direito continua normal. A tecla pode ser trocada nas configurações *(padrão ⌥: decisão minha)*.
 - **Alvo:** se o arquivo clicado já fizer parte da seleção, vale a seleção inteira. Se não fizer, vale só o arquivo clicado, como acontece no Finder.
 - **Forma:** círculo centralizado no cursor, com 8 fatias de 45° e um miolo central. Posições em sentido horário a partir do topo *(decisão minha)*: Otimizar (topo), Juntar, Dividir, Organizar, Imagens para PDF (base), PDF para JPG, PDF para Markdown, e uma vaga tracejada para a próxima ação.
-- **Visual aprovado ("C + D"):** vidro translúcido no estilo do macOS atual (desfoque e brilho na borda), que segue o modo claro e o escuro do sistema. Cada ação tem uma cor própria: Otimizar em vermelho (#ff5a5f), Juntar em azul (#2f8cff) e Imagens para PDF em verde (#2fbf71). *Decisão minha* para as novas: Dividir em laranja (#ff9f0a), Organizar em roxo (#a970ff), PDF para JPG em âmbar (#e0a800) e PDF para Markdown em verde-água (#22b8b0). O mockup com 8 fatias é `docs/superpowers/specs/assets/menu-circular-8.html`. A fatia ativa ganha um anel fino brilhando na cor da ação e um fundo suave da mesma cor, e o ícone fica preenchido. O mockup de referência é `docs/superpowers/specs/assets/menu-circular.html`. Ele usa classes do frame do brainstorm, então abra como referência visual, não como código.
+- **Visual aprovado ("C + D"):** vidro translúcido no estilo do macOS atual (desfoque e brilho na borda), que segue o modo claro e o escuro do sistema. Cada ação tem uma cor própria: Otimizar em vermelho (#ff5a5f), Juntar em azul (#2f8cff) e Imagens para PDF em verde (#2fbf71). *Decisão minha* para as novas: Dividir em laranja (#ff9f0a), Organizar em roxo (#a970ff), PDF para JPG em âmbar (#e0a800) e PDF para Markdown em verde-água (#22b8b0). O mockup com 8 fatias é `docs/mockups/menu-circular-8.html`. A fatia ativa ganha um anel fino brilhando na cor da ação e um fundo suave da mesma cor, e o ícone fica preenchido. O mockup de referência é `docs/mockups/menu-circular.html`. Ele usa classes do frame do brainstorm, então abra como referência visual, não como código.
 - **Miolo:** mostra o que vai acontecer com a fatia sob o cursor: nome da ação, arquivo ou quantidade de arquivos, tamanho atual e limite ("3,4 MB → até 1 MB").
 - **Ações que não servem para a seleção** aparecem apagadas e não respondem. Ao passar o mouse, o miolo mostra o motivo:
   - Otimizar sem PDF na seleção: "só para PDF".
@@ -128,7 +128,7 @@ Pedido do autor, para quem instala não precisar do terminal nem de instruções
 4. **Experimente:** o app cria um `exemplo.pdf` numa pasta temporária, abre essa pasta no Finder e espera o primeiro ⌥ + clique direito nele. Quando o alvo é reconhecido, o passo fica verde e libera "Continuar". Tem "Pular este passo".
 5. **Pronto:** lembra que o app fica na barra de menus e mostra dois ajustes: limite de tamanho (MB) e "Abrir ao iniciar sessão". Botão "Concluir".
 
-Barra inferior com indicador de passos (5 pontos) e botões "Voltar" e a ação principal. Os mockups estão no canvas de marca, na linha "Configuração na primeira abertura".
+Barra inferior com indicador de passos (5 pontos) e botões "Voltar" e a ação principal.
 
 ### Marca
 

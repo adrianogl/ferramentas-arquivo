@@ -44,6 +44,8 @@ O script assina com a variável `SIGN_IDENTITY`, se estiver definida. Sem ela, u
 
 Para gerar o zip de uma release: `scripts/release.sh <versão>`.
 
+O comportamento de cada ação, as regras de saída e as decisões de interface estão em [docs/design.md](docs/design.md).
+
 ## Licença
 
 [MIT](LICENSE)
