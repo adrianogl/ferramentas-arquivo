@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferramentas de Arquivo · PDF e imagem direto no Finder</title>
+<meta name="description" content="App de barra de menus para macOS: ⌥ + clique direito no Finder para otimizar, juntar, dividir e converter PDFs e imagens, tudo no seu Mac. Gratuito e open source.">
+<meta property="og:title" content="Ferramentas de Arquivo">
+<meta property="og:description" content="⌥ + clique direito no Finder para otimizar, juntar, dividir e converter PDFs e imagens, tudo no seu Mac. Gratuito e open source.">
+<meta property="og:image" content="https://adrianogl.github.io/ferramentas-arquivo/assets/icon-1024.png">
+<meta property="og:url" content="https://adrianogl.github.io/ferramentas-arquivo/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1B33;
+  --navy-2: #16294A;
+  --blue: #2F8CFF;
+  --blue-dark: #1560C9;
+  --ink-2: #34507A;
+  --muted: #9FB3D1;
+  --soft: #C7D5EA;
+  --sky: #E8F1FF;
+  --ground: #F5F8FD;
+  --line: #E1E8F3;
+  --white: #FFFFFF;
+  --optimize: #ff5a5f;
+  --merge: #2f8cff;
+  --split: #ff9f0a;
+  --organize: #a970ff;
+  --images: #2fbf71;
+  --jpg: #e0a800;
+  --markdown: #22b8b0;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--navy);
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--navy); }
+a:hover { color: var(--blue-dark); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 14px 22px; border-radius: 12px;
+  font-weight: 700; font-size: 16px; text-decoration: none;
+}
+.btn svg { flex-shrink: 0; }
+.btn-primary { background: var(--blue); color: var(--white); }
+.btn-primary:hover { background: var(--blue-dark); color: var(--white); }
+.btn-ghost { color: var(--white); border: 1px solid var(--ink-2); font-weight: 500; }
+.btn-ghost:hover { color: var(--white); border-color: var(--muted); }
+.btn-dark { background: var(--navy); color: var(--white); }
+.btn-dark:hover { background: var(--navy-2); color: var(--white); }
+
+.hero { background: var(--navy); color: var(--white); }
+.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-top: 20px; padding-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--white); text-decoration: none; min-height: 44px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.brand:hover { color: var(--white); }
+.brand img { width: 32px; height: 32px; }
+.nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; font-size: 15px; }
+.nav-links a { color: var(--soft); text-decoration: none; padding: 12px 0; }
+.nav-links a:hover { color: var(--white); }
+.nav-links .btn { padding: 10px 18px; font-size: 15px; }
+
+.hero-body { display: flex; flex-wrap: wrap; align-items: center; gap: 56px; padding-top: 48px; padding-bottom: 96px; }
+.hero-copy { flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--navy-2); font-size: 13px; color: var(--soft); }
+kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: var(--sky); color: var(--navy); box-shadow: inset 0 -2px 0 var(--soft); font: 700 0.85em "DM Sans", sans-serif; }
+.hero kbd { background: var(--white); box-shadow: none; }
+h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.04; letter-spacing: -0.035em; }
+.lead { margin: 0; font-size: 19px; line-height: 1.55; color: var(--soft); max-width: 34rem; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.fine { font-size: 13px; color: var(--muted); }
+.hero-art { flex: 1 1 340px; min-width: 0; display: flex; justify-content: center; }
+.hero-art img { width: 420px; max-width: 100%; aspect-ratio: 1 / 1; clip-path: circle(43.5% at 50% 50%); filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.35)); }
+
+section { padding-top: 96px; padding-bottom: 32px; }
+h2 { margin: 0; font-size: clamp(2rem, 3.5vw, 2.75rem); letter-spacing: -0.03em; line-height: 1.1; }
+.section-head { display: flex; flex-direction: column; gap: 12px; max-width: 40rem; margin-bottom: 40px; }
+.section-head p, .body { margin: 0; font-size: 17px; line-height: 1.6; color: var(--ink-2); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.card { background: var(--white); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 1px var(--line); }
+.chip { width: 36px; height: 36px; border-radius: 10px; }
+.card h3 { margin: 0; font-size: 18px; }
+.card p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; }
+.step { border-top: 2px solid var(--navy); padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.step b { color: var(--blue-dark); font-size: 15px; }
+.step h3 { margin: 0; font-size: 20px; }
+.step p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+
+.band { background: var(--sky); margin-top: 64px; }
+.band .wrap { display: flex; flex-wrap: wrap; gap: 48px; padding-top: 96px; padding-bottom: 96px; }
+.band .col { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+
+.install { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-bottom: 96px; }
+.install img { width: 96px; height: 96px; }
+.install ol { margin: 0; padding: 0 0 0 1.2em; text-align: left; max-width: 36rem; font-size: 16px; line-height: 1.6; color: var(--ink-2); }
+.install ol li { margin-bottom: 8px; }
+.install ol b { color: var(--navy); }
+.support { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 24px; font-size: 14px; color: var(--ink-2); }
+.coffee { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 12px 20px; border-radius: 10px; border: 1px solid #000; background: #FFDD00; color: #000; font-weight: 700; text-decoration: none; }
+.coffee:hover { color: #000; background: #ffe633; }
+
+footer { border-top: 1px solid #DCE4F0; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 28px; padding-bottom: 28px; font-size: 14px; color: var(--ink-2); }
+footer a { color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap nav">
+    <a class="brand" href="#topo"><img src="assets/favicon.png" srcset="assets/icon.png 4x" alt="" width="32" height="32">Ferramentas de Arquivo</a>
+    <nav class="nav-links" aria-label="Principal">
+      <a href="#acoes">Ações</a>
+      <a href="#como">Como funciona</a>
+      <a href="#privacidade">Privacidade</a>
+      <a href="https://github.com/adrianogl/ferramentas-arquivo">GitHub</a>
+      <a class="btn btn-primary" href="#baixar">Baixar</a>
+    </nav>
+  </div>
+
+  <div id="topo" class="wrap hero-body">
+    <div class="hero-copy">
+      <div class="pill"><kbd>⌥</kbd> + clique direito no Finder</div>
+      <h1>Seu PDF pronto para enviar, sem sair do Finder.</h1>
+      <p class="lead">Um menu circular com sete ferramentas de PDF e imagem aparece em cima do arquivo. Você escolhe a ação e o resultado fica ao lado do original. Tudo roda no seu Mac.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://github.com/adrianogl/ferramentas-arquivo/releases/latest">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+          Baixar para macOS
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/adrianogl/ferramentas-arquivo">Ver o código</a>
+      </div>
+      <div class="fine">Gratuito e open source · macOS 26 ou mais recente · Apple Silicon e Intel</div>
+    </div>
+    <div class="hero-art">
+      <img src="assets/menu-circular.png" width="300" height="300" alt="Menu circular do app aberto sobre um PDF, com a fatia Otimizar PDF destacada e o centro mostrando nota-uber.pdf, 3,4 MB, até 1 MB">
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="acoes" class="wrap">
+    <div class="section-head">
+      <h2>Sete ações, cada uma com sua cor.</h2>
+      <p>As que não servem para o arquivo selecionado ficam apagadas no círculo. Ao passar o mouse, o centro mostra o que vai acontecer antes do clique.</p>
+    </div>
+    <div class="grid">
+      <article class="card"><div class="chip" style="background: var(--optimize)"></div><h3>Otimizar PDF</h3><p>Comprime até ficar abaixo do limite que você definir, com a melhor qualidade que cabe nele.</p></article>
+      <article class="card"><div class="chip" style="background: var(--merge)"></div><h3>Juntar PDFs</h3><p>Vários PDFs e imagens viram um arquivo só, na ordem do nome.</p></article>
+      <article class="card"><div class="chip" style="background: var(--split)"></div><h3>Dividir PDF</h3><p>Separa cada página num PDF ou extrai um intervalo como 1-3, 5.</p></article>
+      <article class="card"><div class="chip" style="background: var(--organize)"></div><h3>Organizar PDF</h3><p>Arraste para reordenar, apague, gire e acrescente páginas de outro arquivo.</p></article>
+      <article class="card"><div class="chip" style="background: var(--images)"></div><h3>Imagens para PDF</h3><p>HEIC, JPG, PNG ou WebP viram um PDF, uma página por imagem, já do tamanho certo.</p></article>
+      <article class="card"><div class="chip" style="background: var(--jpg)"></div><h3>PDF para JPG</h3><p>Cada página vira uma imagem, numa pasta ao lado do PDF.</p></article>
+      <article class="card"><div class="chip" style="background: var(--markdown)"></div><h3>PDF para Markdown</h3><p>Títulos, listas e links viram um arquivo .md. Página escaneada passa por OCR no próprio Mac.</p></article>
+    </div>
+  </section>
+
+  <section id="como" class="wrap">
+    <div class="section-head"><h2>Três passos, nenhum site.</h2></div>
+    <div class="steps">
+      <div class="step"><b>1</b><h3><kbd>⌥</kbd> + clique direito</h3><p>Em cima do arquivo ou da seleção, no Finder ou na Mesa. Sem a tecla, o clique direito continua o de sempre.</p></div>
+      <div class="step"><b>2</b><h3>Escolha a fatia</h3><p>Mova o mouse na direção da ação e clique. Esc ou um clique fora fecha sem fazer nada.</p></div>
+      <div class="step"><b>3</b><h3>Arquivo novo ao lado</h3><p>O resultado aparece selecionado, pronto para arrastar no formulário. O original nunca é alterado.</p></div>
+    </div>
+    <p class="body" style="margin-top: 32px">As mesmas ações também ficam no clique direito normal do Finder, em Serviços.</p>
+  </section>
+
+  <div id="privacidade" class="band">
+    <div class="wrap">
+      <div class="col">
+        <h2>Nada sai do seu Mac.</h2>
+        <p class="body">Nota fiscal, comprovante e recibo de reembolso não precisam passar por site de conversão. A compressão, a conversão e o OCR usam as bibliotecas do próprio macOS, sem conexão com a internet.</p>
+      </div>
+      <div class="col">
+        <h2>Feito para o limite de 1 MB.</h2>
+        <p class="body">O limite vem configurado em 1 MB e muda nas configurações. Se nem na menor qualidade legível o arquivo couber, o app avisa em vez de entregar algo ilegível.</p>
+      </div>
+    </div>
+  </div>
+
+  <section id="baixar" class="wrap install">
+    <img src="assets/icon.png" width="96" height="96" alt="Ícone do Ferramentas de Arquivo">
+    <h2>Pronto para o próximo reembolso?</h2>
+    <a class="btn btn-dark" href="https://github.com/adrianogl/ferramentas-arquivo/releases/latest">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+      Baixar a última versão
+    </a>
+    <ol>
+      <li>Baixe o <b>.zip</b> da release, abra e arraste o app para <b>Aplicativos</b>.</li>
+      <li>O app não é notarizado. Na primeira abertura, o macOS mostra um aviso: feche, vá em <b>Ajustes do Sistema → Privacidade e Segurança</b> e clique em <b>Abrir assim mesmo</b>.</li>
+      <li>O assistente de configuração pede as permissões de Acessibilidade e de Automação do Finder e mostra como usar.</li>
+    </ol>
+    <div class="support">
+      Gostou? Me paga um café.
+      <a class="coffee" href="https://www.buymeacoffee.com/adrianogl">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3v2"/><path d="M12 3v2"/></svg>
+        Buy me a coffee
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Ferramentas de Arquivo · licença <a href="https://github.com/adrianogl/ferramentas-arquivo/blob/main/LICENSE">MIT</a></span>
+    <span>Feito por Adriano Gonçalves</span>
+  </div>
+</footer>
+
+</body>
+</html>
